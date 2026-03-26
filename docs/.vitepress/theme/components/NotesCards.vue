@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
-import { withBase } from 'vitepress'
+import { useRoute, withBase } from 'vitepress'
 
 type NoteItem = {
   slug?: string
@@ -17,21 +17,40 @@ type NoteItem = {
 const notes = ref<NoteItem[]>([])
 const loading = ref(true)
 const error = ref('')
+const route = useRoute()
 
 const POLL_INTERVAL_MS = 2500
 let pollTimer: number | undefined
 
+const isEn = computed(() => route.path.startsWith('/en/'))
+
+const uiText = computed(() =>
+  isEn.value
+    ? {
+        previewFallback: 'No content preview',
+        loading: 'Loading notes...',
+        empty: 'No notes yet.',
+        loadError: 'Failed to load search index. Check docs/public/search-index.json.'
+      }
+    : {
+        previewFallback: '暂无内容预览',
+        loading: '正在加载笔记...',
+        empty: '还没有笔记。',
+        loadError: '读取搜索索引失败，请检查 docs/public/search-index.json。'
+      }
+)
+
 function plainTextPreview(value?: string): string {
   const raw = String(value || '')
   if (!raw) {
-    return '暂无内容预览'
+    return uiText.value.previewFallback
   }
 
   const withoutHtml = raw.replace(/<[^>]*>/g, ' ')
   const withoutMd = withoutHtml.replace(/[`*_#>\[\]()~\-]+/g, ' ')
   const normalized = withoutMd.replace(/\s+/g, ' ').trim()
   if (!normalized) {
-    return '暂无内容预览'
+    return uiText.value.previewFallback
   }
   return normalized
 }
@@ -88,7 +107,7 @@ async function loadNotes(isInitial: boolean): Promise<void> {
   }
 
   if (isInitial) {
-    error.value = 'Failed to load search index. Check docs/public/search-index.json.'
+    error.value = uiText.value.loadError
   }
 }
 
@@ -109,9 +128,9 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <p v-if="loading">Loading notes...</p>
+  <p v-if="loading">{{ uiText.loading }}</p>
   <p v-else-if="error" class="note-cards-error">{{ error }}</p>
-  <p v-else-if="sortedNotes.length === 0">No notes yet.</p>
+  <p v-else-if="sortedNotes.length === 0">{{ uiText.empty }}</p>
 
   <div v-if="!loading && !error && sortedNotes.length > 0" class="notes-cards">
     <a v-for="note in sortedNotes" :key="`${note.link}-${note.updated_at || note.date}`" class="note-card" :href="resolveLink(note.link)">

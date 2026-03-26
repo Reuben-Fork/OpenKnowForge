@@ -6,8 +6,8 @@ prev: false
 next: false
 ---
 
-# Explore Notes
+# 探索笔记
 
-Use this page for a title list sorted by `updated_at` (latest first), powered by `search-index.json` with auto-refresh in dev preview.
+此页面按 `updated_at`（最后编辑时间）倒序展示标题列表，数据来自 `search-index.json`，开发预览下会自动刷新。
 
 <NoteExplorer />

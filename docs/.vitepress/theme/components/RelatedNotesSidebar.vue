@@ -18,6 +18,7 @@ type RelatedNote = NoteItem & {
 const route = useRoute()
 const notes = ref<NoteItem[]>([])
 const loading = ref(false)
+const isEn = computed(() => route.path.startsWith('/en/'))
 
 function normalizePath(value?: string): string {
   const raw = String(value || '').trim()
@@ -58,6 +59,24 @@ function resolveLink(link: string): string {
 const enabled = computed(() => isNoteDetailPath(route.path))
 
 const currentPath = computed(() => normalizePath(route.path))
+
+const uiText = computed(() =>
+  isEn.value
+    ? {
+        title: 'Related Notes',
+        loading: 'Loading...',
+        notIndexed: 'Current note is not indexed yet.',
+        noTag: 'Current note has no tags.',
+        empty: 'No notes with overlapping tags.'
+      }
+    : {
+        title: '相关笔记',
+        loading: '加载中...',
+        notIndexed: '当前笔记尚未进入索引。',
+        noTag: '当前笔记没有标签。',
+        empty: '没有找到标签重叠的笔记。'
+      }
+)
 
 const currentNote = computed<NoteItem | null>(() => {
   if (!enabled.value) {
@@ -175,16 +194,16 @@ onBeforeUnmount(() => {
 
 <template>
   <section v-if="enabled" class="related-notes-sidebar">
-    <p class="related-notes-sidebar__title">Related Notes</p>
-    <p v-if="loading" class="related-notes-sidebar__meta">Loading...</p>
-    <p v-else-if="!currentNote" class="related-notes-sidebar__meta">Current note is not indexed yet.</p>
-    <p v-else-if="(currentNote.tags || []).length === 0" class="related-notes-sidebar__meta">Current note has no tags.</p>
+    <p class="related-notes-sidebar__title">{{ uiText.title }}</p>
+    <p v-if="loading" class="related-notes-sidebar__meta">{{ uiText.loading }}</p>
+    <p v-else-if="!currentNote" class="related-notes-sidebar__meta">{{ uiText.notIndexed }}</p>
+    <p v-else-if="(currentNote.tags || []).length === 0" class="related-notes-sidebar__meta">{{ uiText.noTag }}</p>
     <ul v-else-if="relatedNotes.length > 0" class="related-notes-sidebar__list">
       <li v-for="note in relatedNotes" :key="`${note.link}-${note.overlap}`" class="related-notes-sidebar__item">
         <a :href="resolveLink(note.link)" class="related-notes-sidebar__link">{{ note.title }}</a>
       </li>
     </ul>
-    <p v-else class="related-notes-sidebar__meta">No notes with overlapping tags.</p>
+    <p v-else class="related-notes-sidebar__meta">{{ uiText.empty }}</p>
   </section>
 </template>
 

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
-import { withBase } from 'vitepress'
+import { useRoute, withBase } from 'vitepress'
 
 type NoteItem = {
   slug?: string
@@ -17,9 +17,34 @@ const notes = ref<NoteItem[]>([])
 const query = ref('')
 const loading = ref(true)
 const error = ref('')
+const route = useRoute()
 
 const POLL_INTERVAL_MS = 2500
 let pollTimer: number | undefined
+
+const isEn = computed(() => route.path.startsWith('/en/'))
+
+const uiText = computed(() =>
+  isEn.value
+    ? {
+        unknown: 'unknown',
+        searchPlaceholder: 'Search titles or tags...',
+        loading: 'Loading notes...',
+        loadError: 'Failed to load search index. Check docs/public/search-index.json.',
+        noteCountSuffix: 'notes',
+        lastEdited: 'Last edited',
+        created: 'Created'
+      }
+    : {
+        unknown: '未知',
+        searchPlaceholder: '搜索标题或标签...',
+        loading: '正在加载笔记...',
+        loadError: '读取搜索索引失败，请检查 docs/public/search-index.json。',
+        noteCountSuffix: '条笔记',
+        lastEdited: '最后编辑',
+        created: '创建时间'
+      }
+)
 
 function applyQueryFromUrl(): void {
   if (typeof window === 'undefined') {
@@ -41,7 +66,7 @@ function parseTs(value?: string): number {
 function formatLocalTime(value?: string): string {
   const raw = String(value || '').trim()
   if (!raw) {
-    return 'unknown'
+    return uiText.value.unknown
   }
 
   // Keep date-only values stable instead of letting timezone shifts change the day.
@@ -124,7 +149,7 @@ async function loadNotes(isInitial: boolean): Promise<void> {
   }
 
   if (isInitial) {
-    error.value = 'Failed to load search index. Check docs/public/search-index.json.'
+    error.value = uiText.value.loadError
   }
 }
 
@@ -155,22 +180,22 @@ onBeforeUnmount(() => {
         v-model="query"
         class="note-explorer__search"
         type="search"
-        placeholder="Search titles or tags..."
+        :placeholder="uiText.searchPlaceholder"
       />
     </div>
 
-    <p v-if="loading" class="note-explorer__meta">Loading notes...</p>
+    <p v-if="loading" class="note-explorer__meta">{{ uiText.loading }}</p>
     <p v-else-if="error" class="note-explorer__error">{{ error }}</p>
     <p v-else class="note-explorer__meta">
-      {{ filteredNotes.length }} / {{ notes.length }} notes
+      {{ filteredNotes.length }} / {{ notes.length }} {{ uiText.noteCountSuffix }}
     </p>
 
     <ol v-if="!loading && !error" class="note-explorer__list">
       <li v-for="note in filteredNotes" :key="`${note.link}-${note.updated_at || note.date}`" class="note-explorer__item">
         <a :href="resolveLink(note.link)" class="note-explorer__title">{{ note.title }}</a>
         <div class="note-explorer__time-row">
-          <span class="note-explorer__time">Last edited: {{ formatLocalTime(note.updated_at || note.date) }}</span>
-          <span class="note-explorer__time">Created: {{ formatLocalTime(note.created_at) }}</span>
+          <span class="note-explorer__time">{{ uiText.lastEdited }}: {{ formatLocalTime(note.updated_at || note.date) }}</span>
+          <span class="note-explorer__time">{{ uiText.created }}: {{ formatLocalTime(note.created_at) }}</span>
         </div>
       </li>
     </ol>

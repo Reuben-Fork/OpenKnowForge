@@ -1,7 +1,79 @@
-import { defineConfig } from 'vitepress'
+import { defineConfig, type DefaultTheme } from 'vitepress'
 
 const repoName = process.env.GITHUB_REPOSITORY?.split('/')[1]
 const base = process.env.GITHUB_ACTIONS === 'true' && repoName ? `/${repoName}/` : '/'
+
+const sharedSocialLinks: DefaultTheme.SocialLink[] = [
+  { icon: 'github', link: 'https://github.com/Reuben-Sun/OpenKnowForge' }
+]
+
+const zhThemeConfig: DefaultTheme.Config = {
+  langMenuLabel: '语言',
+  nav: [
+    { text: '首页', link: '/' },
+    { text: '笔记', link: '/notes/' },
+    { text: '探索', link: '/notes/explorer' },
+    { text: '指南', link: '/guide/api' }
+  ],
+  sidebar: {
+    '/guide/': [
+      {
+        text: '指南',
+        items: [
+          { text: 'API', link: '/guide/api' },
+          { text: '结构', link: '/guide/structure' }
+        ]
+      }
+    ],
+    '/notes/': [
+      {
+        text: '笔记',
+        items: [
+          { text: '全部笔记', link: '/notes/' },
+          { text: '探索', link: '/notes/explorer' }
+        ]
+      }
+    ]
+  },
+  socialLinks: sharedSocialLinks,
+  search: {
+    provider: 'local'
+  }
+}
+
+const enThemeConfig: DefaultTheme.Config = {
+  langMenuLabel: 'Language',
+  nav: [
+    { text: 'Home', link: '/en/' },
+    { text: 'Notes', link: '/en/notes/' },
+    { text: 'Explore', link: '/en/notes/explorer' },
+    { text: 'Guide', link: '/en/guide/api' }
+  ],
+  sidebar: {
+    '/en/guide/': [
+      {
+        text: 'Guide',
+        items: [
+          { text: 'API', link: '/en/guide/api' },
+          { text: 'Structure', link: '/en/guide/structure' }
+        ]
+      }
+    ],
+    '/en/notes/': [
+      {
+        text: 'Notes',
+        items: [
+          { text: 'All Notes', link: '/en/notes/' },
+          { text: 'Explore', link: '/en/notes/explorer' }
+        ]
+      }
+    ]
+  },
+  socialLinks: sharedSocialLinks,
+  search: {
+    provider: 'local'
+  }
+}
 
 export default defineConfig({
   title: 'OpenKnowForge',
@@ -11,36 +83,20 @@ export default defineConfig({
   markdown: {
     math: true
   },
-  themeConfig: {
-    nav: [
-      { text: 'Home', link: '/' },
-      { text: 'Notes', link: '/notes/' },
-      { text: 'Explore', link: '/notes/explorer' },
-      { text: 'Guide', link: '/guide/api' }
-    ],
-    sidebar: {
-      '/guide/': [
-        {
-          text: 'Guide',
-          items: [
-            { text: 'API', link: '/guide/api' },
-            { text: 'Structure', link: '/guide/structure' }
-          ]
-        }
-      ],
-      '/notes/': [
-        {
-          text: 'Notes',
-          items: [
-            { text: 'All Notes', link: '/notes/' },
-            { text: 'Explore', link: '/notes/explorer' }
-          ]
-        }
-      ]
+  locales: {
+    root: {
+      label: '简体中文',
+      lang: 'zh-CN',
+      title: 'OpenKnowForge',
+      description: 'API 驱动、Git 记录的知识库',
+      themeConfig: zhThemeConfig
     },
-    socialLinks: [{ icon: 'github', link: 'https://github.com/Reuben-Sun/OpenKnowForge' }],
-    search: {
-      provider: 'local'
+    en: {
+      label: 'English',
+      lang: 'en-US',
+      title: 'OpenKnowForge',
+      description: 'API-driven, git-backed knowledge base',
+      themeConfig: enThemeConfig
     }
   }
 })

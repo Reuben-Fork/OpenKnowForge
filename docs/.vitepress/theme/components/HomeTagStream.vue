@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
-import { withBase } from 'vitepress'
+import { useRoute, withBase } from 'vitepress'
 
 type NoteItem = {
   tags?: string[]
@@ -16,12 +16,31 @@ type TagStat = {
 const loading = ref(true)
 const error = ref('')
 const tagStats = ref<TagStat[]>([])
+const route = useRoute()
 
 const POLL_INTERVAL_MS = 3000
 const ROW_COUNT = 3
 const MIN_ROW_ITEMS = 18
 const TAG_COLOR_PALETTE = ['#FF669E', '#66E3FF', '#FF8266', '#66FFC7', '#AB857D', '#807377']
 let pollTimer: number | undefined
+
+const isEn = computed(() => route.path.startsWith('/en/'))
+
+const uiText = computed(() =>
+  isEn.value
+    ? {
+        title: 'Notes Tag Stream',
+        loading: 'Loading tags...',
+        empty: 'No tags yet.',
+        loadError: 'Failed to load tags from search-index.json.'
+      }
+    : {
+        title: '笔记标签流',
+        loading: '正在加载标签...',
+        empty: '暂无标签。',
+        loadError: '读取 search-index.json 标签失败。'
+      }
+)
 
 function stableHash(text: string): number {
   let hash = 0
@@ -110,7 +129,8 @@ const doubledRows = computed(() => {
 })
 
 function resolveTagLink(tag: string): string {
-  return withBase(`/notes/explorer?q=${encodeURIComponent(tag)}`)
+  const localePrefix = isEn.value ? '/en' : ''
+  return withBase(`${localePrefix}/notes/explorer?q=${encodeURIComponent(tag)}`)
 }
 
 async function loadTagStats(isInitial: boolean): Promise<void> {
@@ -141,7 +161,7 @@ async function loadTagStats(isInitial: boolean): Promise<void> {
   }
 
   if (isInitial) {
-    error.value = 'Failed to load tags from search-index.json.'
+    error.value = uiText.value.loadError
   }
 }
 
@@ -163,10 +183,10 @@ onBeforeUnmount(() => {
 
 <template>
   <section class="home-tag-stream">
-    <h2 class="home-tag-stream__title">Notes Tag Stream</h2>
-    <p v-if="loading" class="home-tag-stream__meta">Loading tags...</p>
+    <h2 class="home-tag-stream__title">{{ uiText.title }}</h2>
+    <p v-if="loading" class="home-tag-stream__meta">{{ uiText.loading }}</p>
     <p v-else-if="error" class="home-tag-stream__error">{{ error }}</p>
-    <p v-else-if="doubledRows.length === 0" class="home-tag-stream__meta">No tags yet.</p>
+    <p v-else-if="doubledRows.length === 0" class="home-tag-stream__meta">{{ uiText.empty }}</p>
 
     <div v-if="!loading && !error && doubledRows.length > 0" class="home-tag-stream__rows">
       <div v-for="(row, rowIndex) in doubledRows" :key="`row-${rowIndex}`" class="home-tag-stream__marquee-row">
