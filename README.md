@@ -1,179 +1,36 @@
 # OpenKnowForge
 
-OpenKnowForge 是一个可编程知识库框架：通过本地 API 写入知识内容（Markdown + 图片 + 元数据），自动保存到 Git，并通过 VitePress 构建成可部署到 GitHub Pages 的静态站点。
+OpenKnowForge 是一个面向个人与团队的知识库工程实践：
+通过本地 API 维护 Markdown 笔记与图片资产，把“内容管理 + 版本管理 + 文档发布”串成一条流水线。
 
-## 功能概览
+## 设计理念
 
-- `POST /note` 写入知识笔记
-- `GET /note/{slug}` 读取单条知识
-- `PUT /note/{slug}` 编辑知识
-- `DELETE /note/{slug}` 删除知识
-- `GET /notes` 按最后编辑时间倒序列出知识
-- `GET /notes/search` 搜索知识（关键字/标签）
-- 自动保存图片到 `docs/project/images/`
-- 自动生成 Markdown 笔记到 `docs/project/entries/`
-- 自动更新笔记目录和静态搜索索引
-- Notes 页面为圆角卡片布局
-- Explore 页面为按最后编辑时间排序的标题列表
-- 自动执行 Git add/commit（失败不会阻塞写入）
+- 内容优先：知识以 Markdown 为核心，便于编辑、审阅与长期保存。
+- Git 原生：每次知识变更都可追踪，可协作，可回滚。
+- 发布友好：前端基于 VitePress，可直接部署到 GitHub Pages。
 
-## 项目结构
+## 启动 API
 
-```txt
-OpenKnowForge/
-├── api/
-│   ├── main.py
-│   └── ingestors/
-├── docs/
-│   ├── ui/
-│   │   ├── zh/
-│   │   ├── en/
-│   │   └── assets/images/
-│   ├── project/
-│   │   ├── entries/
-│   │   └── images/
-│   └── .vitepress/
-├── scripts/
-├── .github/workflows/pages.yml
-├── requirements.txt
-└── package.json
-```
-
-## 1) 使用 micromamba 启动本地 API
+1. 安装 Python 依赖
 
 ```bash
-micromamba create -y -n openknowforge python=3.11
-micromamba run -n openknowforge pip install -r requirements.txt -r requirements-dev.txt
-micromamba run -n openknowforge python -m uvicorn api.main:app --reload
+pip install -r requirements.txt
 ```
 
-服务地址：`http://127.0.0.1:8000`
-
-如果你更习惯先激活环境：
+2. 启动本地 API
 
 ```bash
-eval "$(micromamba shell hook --shell zsh)"
-micromamba activate openknowforge
 python -m uvicorn api.main:app --reload
 ```
 
-也可以直接（在已激活环境中）：
+默认地址：`http://127.0.0.1:8000`
 
-```bash
-./scripts/run_api.sh
-```
+## GitHub Pages
 
-## 2) 写入一条笔记（带提交时间）
+项目已内置 GitHub Pages 工作流：`.github/workflows/pages.yml`。
 
-```bash
-curl -X POST http://127.0.0.1:8000/note \
-  -H 'Content-Type: application/json' \
-  -d '{
-    "title": "OpenKnowForge Quick Start",
-    "content": "Markdown content...",
-    "tags": ["guide", "quickstart"],
-    "images": [],
-    "type": "guide",
-    "status": "published",
-    "related": [],
-    "submitted_at": "2026-03-26T10:00:00+00:00"
-  }'
-```
+使用步骤：
 
-响应会包含：
+1. 在仓库设置中启用 Pages，并将 Source 设为 `GitHub Actions`。
+2. 推送代码到默认分支（如 `main`）后，工作流会自动构建并部署站点。
 
-- `slug` 和笔记路径
-- `created_at`、`updated_at`、`submitted_at`
-- git 提交结果（`git.hash`、`git.committed_at`）
-
-## 3) 读取、搜索、编辑、删除知识
-
-读取单条：
-
-```bash
-curl http://127.0.0.1:8000/note/openknowforge
-```
-
-按最后编辑时间列出：
-
-```bash
-curl http://127.0.0.1:8000/notes
-```
-
-搜索（关键字）：
-
-```bash
-curl "http://127.0.0.1:8000/notes/search?q=openknowforge&limit=20"
-```
-
-搜索（标签）：
-
-```bash
-curl "http://127.0.0.1:8000/notes/search?tag=guide&limit=20"
-```
-
-编辑：
-
-```bash
-curl -X PUT http://127.0.0.1:8000/note/openknowforge \
-  -H 'Content-Type: application/json' \
-  -d '{
-    "content": "Updated content",
-    "status": "published",
-    "submitted_at": "2026-03-26T12:30:00+00:00"
-  }'
-```
-
-删除：
-
-```bash
-curl -X DELETE http://127.0.0.1:8000/note/openknowforge
-```
-
-说明：
-
-- `created_at` 在首次创建时写入
-- `updated_at` 每次编辑时刷新
-- 排序统一按 `updated_at` 倒序
-
-## 4) 启动文档站点
-
-```bash
-npm install
-npm run docs:dev
-```
-
-说明：`docs:dev` 默认开启文件轮询（polling），用于保证 API 写入新笔记后 Web 预览可热更新，无需重启 Web 服务。
-
-访问：
-
-- `http://127.0.0.1:5173/notes/`
-- `http://127.0.0.1:5173/notes/explorer`
-
-构建：
-
-```bash
-npm run docs:build
-```
-
-## 5) 运行自动化测试
-
-```bash
-micromamba run -n openknowforge python -m pytest -q
-```
-
-## 6) GitHub Pages 自动部署
-
-已提供 `.github/workflows/pages.yml`：
-
-- 触发条件：push 到 `main`
-- 流程：安装依赖 -> 构建 VitePress -> 发布到 Pages
-
-首次启用时请在仓库设置中确认：
-
-- `Settings -> Pages -> Source` 使用 `GitHub Actions`
-
-## 可扩展点
-
-- 在 `api/ingestors/` 添加新 ingestor，实现自定义来源/处理流程
-- 增加图片压缩、OCR、AI 摘要、语义检索等能力
