@@ -10,6 +10,7 @@ type NoteItem = {
   created_at?: string
   updated_at?: string
   submitted_at?: string
+  status?: string
   tags?: string[]
   link: string
 }
@@ -17,9 +18,11 @@ type NoteItem = {
 const notes = ref<NoteItem[]>([])
 const loading = ref(true)
 const error = ref('')
+const showDrafts = ref(false)
 const route = useRoute()
 
 const POLL_INTERVAL_MS = 2500
+const SHOW_DRAFTS_STORAGE_KEY = 'okf_show_drafts'
 let pollTimer: number | undefined
 
 const isEn = computed(() => route.path.startsWith('/en/'))
@@ -30,15 +33,32 @@ const uiText = computed(() =>
         previewFallback: 'No content preview',
         loading: 'Loading notes...',
         empty: 'No notes yet.',
-        loadError: 'Failed to load search index. Check docs/public/search-index.json.'
+        loadError: 'Failed to load search index. Check docs/public/search-index.json.',
+        toggleLabel: 'Show Drafts',
+        toggleOn: 'ON',
+        toggleOff: 'OFF'
       }
     : {
         previewFallback: '暂无内容预览',
         loading: '正在加载笔记...',
         empty: '还没有笔记。',
-        loadError: '读取搜索索引失败，请检查 docs/public/search-index.json。'
+        loadError: '读取搜索索引失败，请检查 docs/public/search-index.json。',
+        toggleLabel: '显示草稿',
+        toggleOn: '开',
+        toggleOff: '关'
       }
 )
+
+function normalizeStatus(value?: string): 'mature' | 'draft' {
+  const raw = String(value || '').trim().toLowerCase()
+  if (raw === 'draft') {
+    return 'draft'
+  }
+  if (raw === 'published' || raw === 'mature' || !raw) {
+    return 'mature'
+  }
+  return 'mature'
+}
 
 function plainTextPreview(value?: string): string {
   const raw = String(value || '')
@@ -63,13 +83,38 @@ function parseTs(value?: string): number {
   return Number.isNaN(parsed) ? 0 : parsed
 }
 
+const visibleNotes = computed(() => {
+  if (showDrafts.value) {
+    return notes.value
+  }
+  return notes.value.filter((note) => normalizeStatus(note.status) !== 'draft')
+})
+
 const sortedNotes = computed(() => {
-  return [...notes.value].sort((a, b) => {
+  return [...visibleNotes.value].sort((a, b) => {
     const aTs = parseTs(a.updated_at || a.date)
     const bTs = parseTs(b.updated_at || b.date)
     return bTs - aTs
   })
 })
+
+function hydrateDraftVisibility(): void {
+  if (typeof window === 'undefined') {
+    return
+  }
+  const saved = window.localStorage.getItem(SHOW_DRAFTS_STORAGE_KEY)
+  if (!saved) {
+    return
+  }
+  showDrafts.value = saved === '1'
+}
+
+function toggleShowDrafts(): void {
+  showDrafts.value = !showDrafts.value
+  if (typeof window !== 'undefined') {
+    window.localStorage.setItem(SHOW_DRAFTS_STORAGE_KEY, showDrafts.value ? '1' : '0')
+  }
+}
 
 function resolveLink(link: string): string {
   if (link.startsWith('http://') || link.startsWith('https://')) {
@@ -119,6 +164,7 @@ async function loadNotes(isInitial: boolean): Promise<void> {
 }
 
 onMounted(async () => {
+  hydrateDraftVisibility()
   await loadNotes(true)
   loading.value = false
 
@@ -135,6 +181,12 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
+  <div v-if="!loading && !error" class="note-cards__controls">
+    <button type="button" class="note-cards__toggle" @click="toggleShowDrafts">
+      {{ uiText.toggleLabel }}: {{ showDrafts ? uiText.toggleOn : uiText.toggleOff }}
+    </button>
+  </div>
+
   <p v-if="loading">{{ uiText.loading }}</p>
   <p v-else-if="error" class="note-cards-error">{{ error }}</p>
   <p v-else-if="sortedNotes.length === 0">{{ uiText.empty }}</p>
@@ -153,6 +205,26 @@ onBeforeUnmount(() => {
 <style scoped>
 .note-cards-error {
   color: #b91c1c;
+}
+
+.note-cards__controls {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 10px;
+}
+
+.note-cards__toggle {
+  border: 1px solid var(--vp-c-divider);
+  background: var(--vp-c-bg-soft);
+  color: var(--vp-c-text-1);
+  border-radius: 10px;
+  padding: 6px 12px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.note-cards__toggle:hover {
+  opacity: 0.88;
 }
 
 .dark .note-cards-error {

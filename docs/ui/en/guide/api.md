@@ -22,11 +22,13 @@ curl -X POST http://127.0.0.1:8000/note \
     "tags": ["math", "information-theory"],
     "images": [],
     "type": "concept",
-    "status": "published",
+    "status": "mature",
     "related": [],
     "submitted_at": "2026-03-26T10:00:00+00:00"
   }'
 ```
+
+`status` supports: `mature` (default) and `draft`.
 
 Key fields in response:
 
@@ -71,7 +73,7 @@ curl -X PUT http://127.0.0.1:8000/note/<slug> \
     "title": "Formula Example",
     "content": "Updated content",
     "tags": ["math", "formula"],
-    "status": "published",
+    "status": "mature",
     "submitted_at": "2026-03-26T12:30:00+00:00"
   }'
 ```

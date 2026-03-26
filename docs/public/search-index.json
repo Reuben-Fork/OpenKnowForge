@@ -1,15 +1,16 @@
 {
-  "generatedAt": "2026-03-26T16:39:05+00:00",
+  "generatedAt": "2026-03-26T17:55:27+00:00",
   "notes": [
     {
       "slug": "openknowforge",
       "title": "OpenKnowForge快速开始",
       "created_at": "2026-03-26T00:00:00+00:00",
-      "updated_at": "2026-03-26T16:38:33+00:00",
-      "submitted_at": "2026-03-26T16:38:33+00:00",
+      "updated_at": "2026-03-26T17:08:56+00:00",
+      "submitted_at": "2026-03-26T17:08:56+00:00",
       "date": "2026-03-26",
-      "word_count": 690,
+      "word_count": 353,
       "image_count": 0,
+      "status": "mature",
       "tags": [
         "guide",
         "how-to",
@@ -21,7 +22,7 @@
         "ci"
       ],
       "link": "/notes/entries/openknowforge",
-      "excerpt": "## 本地开发与预览 ### 1. 准备环境（micromamba） ```bash micromamba create -y -n openknowforge python=3.11 micromamba run -n openknowforge pip install -r requirements.txt -r requirements-dev.txt ``` ### 2. 启动 API `"
+      "excerpt": "## 本地开发与预览 ### 启动 API ```bash python -m uvicorn api.main:app --reload ``` ### 本地预览 ```bash npm run docs:dev ``` 访问： - `http://127.0.0.1:5173/notes/` - `http://127.0.0.1:5173/notes/explorer` ## GitHub "
     },
     {
       "slug": "git-submodule-quick-notes",
@@ -32,6 +33,7 @@
       "date": "2026-03-26",
       "word_count": 51,
       "image_count": 0,
+      "status": "mature",
       "tags": [
         "code-example",
         "git",
@@ -49,6 +51,7 @@
       "date": "2026-03-26",
       "word_count": 4,
       "image_count": 1,
+      "status": "mature",
       "tags": [
         "image",
         "share"
@@ -65,6 +68,7 @@
       "date": "2026-03-26",
       "word_count": 131,
       "image_count": 0,
+      "status": "mature",
       "tags": [
         "math",
         "information-theory",

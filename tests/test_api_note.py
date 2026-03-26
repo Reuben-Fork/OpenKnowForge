@@ -120,10 +120,12 @@ def test_post_note_creates_markdown_assets_and_indexes(client: TestClient, tmp_p
     assert search_index['notes'][0]['updated_at'] == '2026-03-26T10:00:00+00:00'
     assert search_index['notes'][0]['word_count'] == 3
     assert search_index['notes'][0]['image_count'] == 1
+    assert search_index['notes'][0]['status'] == 'draft'
 
     assert payload['created_at'] == '2026-03-26T10:00:00+00:00'
     assert payload['updated_at'] == '2026-03-26T10:00:00+00:00'
     assert payload['submitted_at'] == '2026-03-26T10:00:00+00:00'
+    assert payload['status'] == 'draft'
     assert payload['word_count'] == 3
     assert payload['image_count'] == 1
     assert payload['uploaded_image_count'] == 1
@@ -155,6 +157,7 @@ def test_get_note_returns_structured_note(client: TestClient) -> None:
     assert note['content'] == 'Initial content'
     assert note['created_at'] == '2026-03-26T09:00:00+00:00'
     assert note['updated_at'] == '2026-03-26T09:00:00+00:00'
+    assert note['status'] == 'draft'
     assert note['word_count'] == 2
     assert note['image_count'] == 0
 
@@ -202,13 +205,14 @@ def test_put_note_updates_last_edited_and_sorting(client: TestClient) -> None:
     )
     assert edit_resp.status_code == 200
     edit_payload = edit_resp.json()['result']
+    assert edit_payload['status'] == 'mature'
     assert edit_payload['word_count'] == 2
     assert edit_payload['image_count'] == 0
     assert edit_payload['uploaded_image_count'] == 0
 
     edited_note = client.get(f'/note/{a_slug}').json()['result']
     assert edited_note['content'] == 'alpha updated'
-    assert edited_note['status'] == 'published'
+    assert edited_note['status'] == 'mature'
     assert edited_note['created_at'] == '2026-03-26T09:00:00+00:00'
     assert edited_note['updated_at'] == '2026-03-26T12:30:00+00:00'
     assert edited_note['word_count'] == 2
@@ -380,6 +384,45 @@ def test_post_note_empty_title_fails_validation(client: TestClient) -> None:
     )
 
     assert response.status_code == 422
+
+
+def test_post_note_default_status_is_mature(client: TestClient) -> None:
+    create_resp = client.post(
+        '/note',
+        json={
+            'title': 'Default Status Note',
+            'content': 'status defaults to mature',
+            'tags': ['status'],
+            'images': [],
+            'type': 'note',
+            'related': [],
+            'submitted_at': '2026-03-26T13:00:00+00:00',
+        },
+    )
+    assert create_resp.status_code == 200
+    result = create_resp.json()['result']
+    assert result['status'] == 'mature'
+
+    read_resp = client.get(f"/note/{result['slug']}")
+    assert read_resp.status_code == 200
+    assert read_resp.json()['result']['status'] == 'mature'
+
+
+def test_post_note_rejects_invalid_status(client: TestClient) -> None:
+    response = client.post(
+        '/note',
+        json={
+            'title': 'Invalid Status Note',
+            'content': 'invalid',
+            'tags': [],
+            'images': [],
+            'type': 'note',
+            'status': 'archived',
+            'related': [],
+        },
+    )
+    assert response.status_code == 400
+    assert 'status must be one of:' in response.json()['detail']
 
 
 def test_word_count_includes_code_blocks_and_inline_code(client: TestClient) -> None:

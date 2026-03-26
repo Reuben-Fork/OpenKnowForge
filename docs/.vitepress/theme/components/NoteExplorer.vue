@@ -9,6 +9,7 @@ type NoteItem = {
   created_at?: string
   updated_at?: string
   submitted_at?: string
+  status?: string
   tags?: string[]
   link: string
 }
@@ -17,9 +18,11 @@ const notes = ref<NoteItem[]>([])
 const query = ref('')
 const loading = ref(true)
 const error = ref('')
+const showDrafts = ref(false)
 const route = useRoute()
 
 const POLL_INTERVAL_MS = 2500
+const SHOW_DRAFTS_STORAGE_KEY = 'okf_show_drafts'
 let pollTimer: number | undefined
 
 const isEn = computed(() => route.path.startsWith('/en/'))
@@ -33,7 +36,10 @@ const uiText = computed(() =>
         loadError: 'Failed to load search index. Check docs/public/search-index.json.',
         noteCountSuffix: 'notes',
         lastEdited: 'Last edited',
-        created: 'Created'
+        created: 'Created',
+        toggleLabel: 'Show Drafts',
+        toggleOn: 'ON',
+        toggleOff: 'OFF'
       }
     : {
         unknown: '未知',
@@ -42,9 +48,23 @@ const uiText = computed(() =>
         loadError: '读取搜索索引失败，请检查 docs/public/search-index.json。',
         noteCountSuffix: '条笔记',
         lastEdited: '最后编辑',
-        created: '创建时间'
+        created: '创建时间',
+        toggleLabel: '显示草稿',
+        toggleOn: '开',
+        toggleOff: '关'
       }
 )
+
+function normalizeStatus(value?: string): 'mature' | 'draft' {
+  const raw = String(value || '').trim().toLowerCase()
+  if (raw === 'draft') {
+    return 'draft'
+  }
+  if (raw === 'published' || raw === 'mature' || !raw) {
+    return 'mature'
+  }
+  return 'mature'
+}
 
 function applyQueryFromUrl(): void {
   if (typeof window === 'undefined') {
@@ -101,15 +121,43 @@ function sortByUpdatedDesc(items: NoteItem[]): NoteItem[] {
 
 const filteredNotes = computed(() => {
   const q = query.value.trim().toLowerCase()
+  const statusBase = showDrafts.value
+    ? notes.value
+    : notes.value.filter((note) => normalizeStatus(note.status) !== 'draft')
   const base = q
-    ? notes.value.filter((note) => {
+    ? statusBase.filter((note) => {
         const haystack = [note.title, ...(note.tags || [])].join(' ').toLowerCase()
         return haystack.includes(q)
       })
-    : notes.value
+    : statusBase
 
   return sortByUpdatedDesc(base)
 })
+
+const statusFilteredTotal = computed(() => {
+  if (showDrafts.value) {
+    return notes.value.length
+  }
+  return notes.value.filter((note) => normalizeStatus(note.status) !== 'draft').length
+})
+
+function hydrateDraftVisibility(): void {
+  if (typeof window === 'undefined') {
+    return
+  }
+  const saved = window.localStorage.getItem(SHOW_DRAFTS_STORAGE_KEY)
+  if (!saved) {
+    return
+  }
+  showDrafts.value = saved === '1'
+}
+
+function toggleShowDrafts(): void {
+  showDrafts.value = !showDrafts.value
+  if (typeof window !== 'undefined') {
+    window.localStorage.setItem(SHOW_DRAFTS_STORAGE_KEY, showDrafts.value ? '1' : '0')
+  }
+}
 
 function resolveLink(link: string): string {
   if (link.startsWith('http://') || link.startsWith('https://')) {
@@ -161,6 +209,7 @@ async function loadNotes(isInitial: boolean): Promise<void> {
 }
 
 onMounted(async () => {
+  hydrateDraftVisibility()
   applyQueryFromUrl()
   await loadNotes(true)
   loading.value = false
@@ -189,12 +238,15 @@ onBeforeUnmount(() => {
         type="search"
         :placeholder="uiText.searchPlaceholder"
       />
+      <button type="button" class="note-explorer__toggle" @click="toggleShowDrafts">
+        {{ uiText.toggleLabel }}: {{ showDrafts ? uiText.toggleOn : uiText.toggleOff }}
+      </button>
     </div>
 
     <p v-if="loading" class="note-explorer__meta">{{ uiText.loading }}</p>
     <p v-else-if="error" class="note-explorer__error">{{ error }}</p>
     <p v-else class="note-explorer__meta">
-      {{ filteredNotes.length }} / {{ notes.length }} {{ uiText.noteCountSuffix }}
+      {{ filteredNotes.length }} / {{ statusFilteredTotal }} {{ uiText.noteCountSuffix }}
     </p>
 
     <ol v-if="!loading && !error" class="note-explorer__list">
@@ -218,16 +270,33 @@ onBeforeUnmount(() => {
 }
 
 .note-explorer__controls {
-  display: grid;
+  display: flex;
+  align-items: center;
   gap: 10px;
 }
 
 .note-explorer__search {
   width: 100%;
+  flex: 1;
   border: 1px solid var(--vp-c-divider);
   border-radius: 10px;
   padding: 10px 12px;
   background: #fff;
+}
+
+.note-explorer__toggle {
+  border: 1px solid var(--vp-c-divider);
+  background: var(--vp-c-bg-soft);
+  color: var(--vp-c-text-1);
+  border-radius: 10px;
+  padding: 8px 12px;
+  font-size: 13px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.note-explorer__toggle:hover {
+  opacity: 0.88;
 }
 
 .note-explorer__meta,
@@ -267,6 +336,16 @@ onBeforeUnmount(() => {
 .note-explorer__time {
   color: var(--vp-c-text-2);
   font-size: 12px;
+}
+
+@media (max-width: 640px) {
+  .note-explorer__controls {
+    flex-wrap: wrap;
+  }
+
+  .note-explorer__toggle {
+    margin-left: auto;
+  }
 }
 
 .dark .note-explorer {

@@ -53,6 +53,8 @@ CJK_CHAR_PATTERN = re.compile(r"[\u3400-\u4DBF\u4E00-\u9FFF\uF900-\uFAFF]")
 LATIN_WORD_PATTERN = re.compile(r"[A-Za-z0-9]+(?:[._'/-][A-Za-z0-9]+)*")
 RESERVED_NOTE_FILES = {"index.md", "explorer.md"}
 STATS_BACKFILLED_ROOTS: set[str] = set()
+VALID_NOTE_STATUS = {"mature", "draft"}
+NOTE_STATUS_ALIASES = {"published": "mature"}
 
 
 @dataclass
@@ -73,7 +75,7 @@ class NoteIngestor(BaseIngestor):
         tags = self._normalize_list(data.get("tags"))
         related = self._normalize_list(data.get("related"))
         note_type = str(data.get("note_type", "note")).strip() or "note"
-        status = str(data.get("status", "draft")).strip() or "draft"
+        status = self._normalize_status(data.get("status"), default="mature")
 
         submitted_at = self._normalize_timestamp(data.get("submitted_at"), default_now=True)
         created_at = submitted_at
@@ -105,6 +107,7 @@ class NoteIngestor(BaseIngestor):
         return {
             "slug": slug,
             "note_path": str(note_path.relative_to(ROOT_DIR)),
+            "status": status,
             "uploaded_image_count": len(saved_images),
             "image_count": image_count,
             "image_paths": image_paths,
@@ -139,7 +142,7 @@ class NoteIngestor(BaseIngestor):
         )
 
         note_type = str(data.get("note_type", current["type"])).strip() or "note"
-        status = str(data.get("status", current["status"])).strip() or "draft"
+        status = self._normalize_status(data.get("status", current["status"]), default="mature")
 
         submitted_at = self._normalize_timestamp(data.get("submitted_at"), default_now=True)
         created_at = self._normalize_timestamp(current.get("created_at"), default_now=False) or submitted_at
@@ -181,6 +184,7 @@ class NoteIngestor(BaseIngestor):
         return {
             "slug": slug,
             "note_path": str(note_path.relative_to(ROOT_DIR)),
+            "status": status,
             "uploaded_image_count": len(saved_images),
             "image_count": image_count,
             "image_paths": image_paths,
@@ -204,7 +208,7 @@ class NoteIngestor(BaseIngestor):
         tags = self._normalize_list(frontmatter.get("tags"))
         related = self._normalize_list(frontmatter.get("related"))
         note_type = str(frontmatter.get("type") or "note")
-        status = str(frontmatter.get("status") or "draft")
+        status = self._normalize_status(frontmatter.get("status"), default="mature", strict=False)
 
         created_at = self._normalize_timestamp(
             frontmatter.get("created_at") or frontmatter.get("date"),
@@ -342,6 +346,18 @@ class NoteIngestor(BaseIngestor):
                 normalized.append(text)
         return normalized
 
+    def _normalize_status(self, value: Any, *, default: str, strict: bool = True) -> str:
+        raw = str(value or "").strip().lower()
+        if not raw:
+            raw = default
+        raw = NOTE_STATUS_ALIASES.get(raw, raw)
+        if raw not in VALID_NOTE_STATUS:
+            if not strict:
+                return default
+            valid = ", ".join(sorted(VALID_NOTE_STATUS))
+            raise ValueError(f"status must be one of: {valid}")
+        return raw
+
     def _build_note_slug(self, title: str) -> str:
         # Keep file naming deterministic and URL-friendly.
         slug = title.lower().strip()
@@ -461,6 +477,8 @@ class NoteIngestor(BaseIngestor):
         submitted_at: str,
         images: list[SavedImage],
     ) -> Path:
+        normalized_status = self._normalize_status(status, default="mature")
+
         image_lines: list[str] = []
         for img in images:
             image_lines.append(f'<img src="{img.markdown_path}" alt="{title}" loading="lazy" />')
@@ -486,7 +504,7 @@ class NoteIngestor(BaseIngestor):
             "word_count": word_count,
             "image_count": image_count,
             "type": note_type,
-            "status": status,
+            "status": normalized_status,
             "related": related,
         }
 
@@ -714,6 +732,7 @@ class NoteIngestor(BaseIngestor):
             tags = frontmatter.get("tags") or []
             if not isinstance(tags, list):
                 tags = [str(tags)]
+            status = self._normalize_status(frontmatter.get("status"), default="mature", strict=False)
 
             computed_word_count, computed_image_count = self._compute_note_stats(body)
             word_count = self._normalize_count(frontmatter.get("word_count"), fallback=computed_word_count)
@@ -728,6 +747,7 @@ class NoteIngestor(BaseIngestor):
                 "date": (updated_at or created_at)[:10],
                 "word_count": word_count,
                 "image_count": image_count,
+                "status": status,
                 "tags": [str(tag) for tag in tags],
                 "link": f"/notes/entries/{slug}"
                 if path.parent in (USER_NOTES_DIR, LEGACY_USER_NOTES_DIR)
