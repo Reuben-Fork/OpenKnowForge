@@ -1,6 +1,23 @@
 {
-  "generatedAt": "2026-03-26T16:01:55+00:00",
+  "generatedAt": "2026-03-26T16:16:10+00:00",
   "notes": [
+    {
+      "slug": "git-submodule-quick-notes",
+      "title": "代码示例",
+      "created_at": "2026-03-26T11:53:34+00:00",
+      "updated_at": "2026-03-26T16:15:57+00:00",
+      "submitted_at": "2026-03-26T16:15:57+00:00",
+      "date": "2026-03-26",
+      "word_count": 51,
+      "image_count": 0,
+      "tags": [
+        "code-example",
+        "git",
+        "submodule"
+      ],
+      "link": "/notes/entries/git-submodule-quick-notes",
+      "excerpt": "### 子模块 在已有项目中添加子模块 ```bash git submodule add <仓库地址> <本地路径> ``` 克隆一个包含子模块的项目 ```bash git clone --recursive <仓库地址> ``` 将一个已有的项目初始化子模块 ```bash git submodule update --init --recursive ```"
+    },
     {
       "slug": "note",
       "title": "图片示例",
@@ -52,23 +69,6 @@
       ],
       "link": "/notes/entries/github-pages-openknowforge-web",
       "excerpt": "目标：将本项目的 VitePress Web 站点自动部署到 GitHub Pages。 ## 1. 准备仓库 1. 确保代码已推送到 `main` 分支。 2. 仓库根目录需要有 `package.json`，且可执行 `npm run docs:build`。 3. 本项目已内置工作流文件：`.github/workflows/pages.yml`。 ## 2. 配置 VitePress ba"
-    },
-    {
-      "slug": "git-submodule-quick-notes",
-      "title": "Git Submodule Quick Notes",
-      "created_at": "2026-03-26T11:53:34+00:00",
-      "updated_at": "2026-03-26T11:53:34+00:00",
-      "submitted_at": "2026-03-26T11:53:34+00:00",
-      "date": "2026-03-26",
-      "word_count": 51,
-      "image_count": 0,
-      "tags": [
-        "git",
-        "submodule",
-        "how-to"
-      ],
-      "link": "/notes/entries/git-submodule-quick-notes",
-      "excerpt": "### 子模块 在已有项目中添加子模块 ```bash git submodule add <仓库地址> <本地路径> ``` 克隆一个包含子模块的项目 ```bash git clone --recursive <仓库地址> ``` 将一个已有的项目初始化子模块 ```bash git submodule update --init --recursive ```"
     },
     {
       "slug": "openknowforge",
