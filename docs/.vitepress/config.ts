@@ -4,6 +4,9 @@ export default defineConfig({
   title: 'OpenKnowForge',
   description: 'API-driven, git-backed knowledge base',
   cleanUrls: true,
+  markdown: {
+    math: true
+  },
   themeConfig: {
     nav: [
       { text: 'Home', link: '/' },
