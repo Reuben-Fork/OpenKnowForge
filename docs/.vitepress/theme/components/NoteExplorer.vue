@@ -38,6 +38,34 @@ function parseTs(value?: string): number {
   return Number.isNaN(parsed) ? 0 : parsed
 }
 
+function formatLocalTime(value?: string): string {
+  const raw = String(value || '').trim()
+  if (!raw) {
+    return 'unknown'
+  }
+
+  // Keep date-only values stable instead of letting timezone shifts change the day.
+  if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) {
+    return raw
+  }
+
+  const parsed = new Date(raw)
+  if (Number.isNaN(parsed.getTime())) {
+    return raw
+  }
+
+  return new Intl.DateTimeFormat(undefined, {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false,
+    timeZoneName: 'short'
+  }).format(parsed)
+}
+
 function sortByUpdatedDesc(items: NoteItem[]): NoteItem[] {
   return [...items].sort((a, b) => {
     const aTs = parseTs(a.updated_at || a.date)
@@ -141,8 +169,8 @@ onBeforeUnmount(() => {
       <li v-for="note in filteredNotes" :key="`${note.link}-${note.updated_at || note.date}`" class="note-explorer__item">
         <a :href="resolveLink(note.link)" class="note-explorer__title">{{ note.title }}</a>
         <div class="note-explorer__time-row">
-          <span class="note-explorer__time">Last edited: {{ note.updated_at || note.date || 'unknown' }}</span>
-          <span class="note-explorer__time">Created: {{ note.created_at || 'unknown' }}</span>
+          <span class="note-explorer__time">Last edited: {{ formatLocalTime(note.updated_at || note.date) }}</span>
+          <span class="note-explorer__time">Created: {{ formatLocalTime(note.created_at) }}</span>
         </div>
       </li>
     </ol>
