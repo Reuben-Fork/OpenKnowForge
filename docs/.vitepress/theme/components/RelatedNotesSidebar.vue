@@ -20,12 +20,22 @@ const notes = ref<NoteItem[]>([])
 const loading = ref(false)
 const isEn = computed(() => route.path.startsWith('/en/'))
 
+function stripLocalePrefix(value: string): string {
+  if (value === '/en') {
+    return '/'
+  }
+  if (value.startsWith('/en/')) {
+    return value.slice(3)
+  }
+  return value
+}
+
 function normalizePath(value?: string): string {
   const raw = String(value || '').trim()
   if (!raw) {
     return '/'
   }
-  const next = raw.replace(/\/+$/, '')
+  const next = stripLocalePrefix(raw).replace(/\/+$/, '')
   return next || '/'
 }
 
@@ -51,9 +61,16 @@ function resolveLink(link: string): string {
     return link
   }
   if (link.startsWith('/')) {
+    if (isEn.value && (link === '/notes' || link.startsWith('/notes/'))) {
+      return withBase(`/en${link}`)
+    }
     return withBase(link)
   }
-  return withBase(`/notes/${link.replace(/^\.\//, '')}`)
+  const normalized = `/notes/${link.replace(/^\.\//, '')}`
+  if (isEn.value) {
+    return withBase(`/en${normalized}`)
+  }
+  return withBase(normalized)
 }
 
 const enabled = computed(() => isNoteDetailPath(route.path))

@@ -4,6 +4,7 @@ import base64
 import binascii
 import hashlib
 import json
+import os
 import re
 import subprocess
 from dataclasses import dataclass
@@ -24,6 +25,7 @@ UI_ZH_DIR = UI_DIR / "zh"
 UI_EN_DIR = UI_DIR / "en"
 UI_NOTES_ZH_DIR = UI_ZH_DIR / "notes"
 UI_NOTES_EN_DIR = UI_EN_DIR / "notes"
+EN_NOTE_ENTRIES_DIR = UI_NOTES_EN_DIR / "entries"
 PROJECT_DIR = DOCS_DIR / "project"
 USER_NOTES_DIR = PROJECT_DIR / "entries"
 IMAGES_DIR = PROJECT_DIR / "images"
@@ -83,6 +85,7 @@ class NoteIngestor(BaseIngestor):
         )
 
         self._rebuild_notes_index()
+        self._rebuild_en_note_aliases()
         self._rebuild_search_index()
 
         commit = self._git_commit(slug, action="add")
@@ -151,6 +154,7 @@ class NoteIngestor(BaseIngestor):
         )
 
         self._rebuild_notes_index()
+        self._rebuild_en_note_aliases()
         self._rebuild_search_index()
 
         commit = self._git_commit(slug, action="update")
@@ -267,6 +271,7 @@ class NoteIngestor(BaseIngestor):
         deleted_at = self._normalize_timestamp(None, default_now=True)
 
         self._rebuild_notes_index()
+        self._rebuild_en_note_aliases()
         self._rebuild_search_index()
 
         commit = self._git_commit(slug, action="delete")
@@ -283,6 +288,7 @@ class NoteIngestor(BaseIngestor):
     def _ensure_dirs(self) -> None:
         UI_NOTES_ZH_DIR.mkdir(parents=True, exist_ok=True)
         UI_NOTES_EN_DIR.mkdir(parents=True, exist_ok=True)
+        EN_NOTE_ENTRIES_DIR.mkdir(parents=True, exist_ok=True)
         USER_NOTES_DIR.mkdir(parents=True, exist_ok=True)
         IMAGES_DIR.mkdir(parents=True, exist_ok=True)
         PUBLIC_DIR.mkdir(parents=True, exist_ok=True)
@@ -495,6 +501,36 @@ class NoteIngestor(BaseIngestor):
 
         ZH_NOTES_INDEX_PATH.write_text("\n".join(zh_lines).rstrip() + "\n", encoding="utf-8")
         EN_NOTES_INDEX_PATH.write_text("\n".join(en_lines).rstrip() + "\n", encoding="utf-8")
+
+    def _rebuild_en_note_aliases(self) -> None:
+        EN_NOTE_ENTRIES_DIR.mkdir(parents=True, exist_ok=True)
+
+        source_by_slug: dict[str, Path] = {}
+        for path in sorted(USER_NOTES_DIR.glob("*.md")):
+            source_by_slug[path.stem] = path
+        for path in sorted(LEGACY_USER_NOTES_DIR.glob("*.md")):
+            source_by_slug.setdefault(path.stem, path)
+
+        for slug, source in source_by_slug.items():
+            target = EN_NOTE_ENTRIES_DIR / f"{slug}.md"
+            include_rel = Path(os.path.relpath(source, start=target.parent)).as_posix()
+            content = "\n".join(
+                [
+                    "---",
+                    "sidebar: false",
+                    "---",
+                    "",
+                    f"<!--@include: {include_rel} -->",
+                    "",
+                ]
+            )
+            if not target.exists() or target.read_text(encoding="utf-8") != content:
+                target.write_text(content, encoding="utf-8")
+
+        existing = {path.stem: path for path in EN_NOTE_ENTRIES_DIR.glob("*.md")}
+        for slug, path in existing.items():
+            if slug not in source_by_slug:
+                path.unlink()
 
     def _rebuild_search_index(self) -> None:
         notes = self._collect_notes(include_excerpt=True)

@@ -18,6 +18,7 @@ def _override_paths(monkeypatch: pytest.MonkeyPatch, root: Path) -> None:
     ui_en_dir = ui_dir / 'en'
     ui_notes_zh_dir = ui_zh_dir / 'notes'
     ui_notes_en_dir = ui_en_dir / 'notes'
+    en_note_entries_dir = ui_notes_en_dir / 'entries'
     project_dir = docs_dir / 'project'
     user_notes_dir = project_dir / 'entries'
     images_dir = project_dir / 'images'
@@ -33,6 +34,7 @@ def _override_paths(monkeypatch: pytest.MonkeyPatch, root: Path) -> None:
     monkeypatch.setattr(note_ingestor, 'UI_EN_DIR', ui_en_dir)
     monkeypatch.setattr(note_ingestor, 'UI_NOTES_ZH_DIR', ui_notes_zh_dir)
     monkeypatch.setattr(note_ingestor, 'UI_NOTES_EN_DIR', ui_notes_en_dir)
+    monkeypatch.setattr(note_ingestor, 'EN_NOTE_ENTRIES_DIR', en_note_entries_dir)
     monkeypatch.setattr(note_ingestor, 'PROJECT_DIR', project_dir)
     monkeypatch.setattr(note_ingestor, 'USER_NOTES_DIR', user_notes_dir)
     monkeypatch.setattr(note_ingestor, 'IMAGES_DIR', images_dir)
@@ -98,6 +100,9 @@ def test_post_note_creates_markdown_assets_and_indexes(client: TestClient, tmp_p
 
     notes_index_text = (tmp_path / 'docs' / 'ui' / 'zh' / 'notes' / 'index.md').read_text(encoding='utf-8')
     assert '<NotesCards />' in notes_index_text
+    en_alias_path = tmp_path / 'docs' / 'ui' / 'en' / 'notes' / 'entries' / f'{slug}.md'
+    assert en_alias_path.exists()
+    assert f'../../../../project/entries/{slug}.md' in en_alias_path.read_text(encoding='utf-8')
 
     image_files = list((tmp_path / 'docs' / 'project' / 'images').glob('*.png'))
     assert len(image_files) == 1

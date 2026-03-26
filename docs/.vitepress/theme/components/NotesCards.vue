@@ -76,9 +76,16 @@ function resolveLink(link: string): string {
     return link
   }
   if (link.startsWith('/')) {
+    if (isEn.value && (link === '/notes' || link.startsWith('/notes/'))) {
+      return withBase(`/en${link}`)
+    }
     return withBase(link)
   }
-  return withBase(`/notes/${link.replace(/^\.\//, '')}`)
+  const normalized = `/notes/${link.replace(/^\.\//, '')}`
+  if (isEn.value) {
+    return withBase(`/en${normalized}`)
+  }
+  return withBase(normalized)
 }
 
 async function loadNotes(isInitial: boolean): Promise<void> {
