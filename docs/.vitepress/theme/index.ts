@@ -2,6 +2,7 @@ import DefaultTheme from 'vitepress/theme'
 import type { Theme } from 'vitepress'
 import NoteExplorer from './components/NoteExplorer.vue'
 import NotesCards from './components/NotesCards.vue'
+import HomeTagStream from './components/HomeTagStream.vue'
 import './custom.css'
 
 const theme: Theme = {
@@ -9,6 +10,7 @@ const theme: Theme = {
   enhanceApp({ app }) {
     app.component('NoteExplorer', NoteExplorer)
     app.component('NotesCards', NotesCards)
+    app.component('HomeTagStream', HomeTagStream)
   }
 }
 

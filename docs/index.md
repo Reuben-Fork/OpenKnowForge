@@ -19,3 +19,5 @@ features:
   - title: Static Publishing
     details: VitePress builds and deploys to GitHub Pages with CI.
 ---
+
+<HomeTagStream />
