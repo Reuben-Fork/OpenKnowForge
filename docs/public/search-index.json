@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-26T13:02:40+00:00",
+  "generatedAt": "2026-03-26T13:43:17+00:00",
   "notes": [
     {
       "slug": "note",
@@ -12,7 +12,7 @@
         "image",
         "share"
       ],
-      "link": "/notes/note",
+      "link": "/notes/entries/note",
       "excerpt": "美图分享 ## Images <img src=\"/assets/images/note-1-76363d4f6052.png\" alt=\"美图分享\" loading=\"lazy\" />"
     },
     {
@@ -27,7 +27,7 @@
         "information-theory",
         "kl-divergence"
       ],
-      "link": "/notes/kl-kl-divergence",
+      "link": "/notes/entries/kl-kl-divergence",
       "excerpt": "### KL散度 KL散度（Kullback-Leibler Divergence），也称为相对熵（Relative Entropy），用于衡量一个分布相对于另一个分布的相似性。 假设现在有两个离散概率分布 $P$ 和 $Q$，它们的 KL 散度计算公式为： $$ D_{KL}(P||Q)=\\sum_{i}P(i)\\log \\left(\\frac{P(i)}{Q(i)} \\right) $$ 其中"
     },
     {
@@ -44,7 +44,7 @@
         "ci",
         "how-to"
       ],
-      "link": "/notes/github-pages-openknowforge-web",
+      "link": "/notes/entries/github-pages-openknowforge-web",
       "excerpt": "目标：将本项目的 VitePress Web 站点自动部署到 GitHub Pages。 ## 1. 准备仓库 1. 确保代码已推送到 `main` 分支。 2. 仓库根目录需要有 `package.json`，且可执行 `npm run docs:build`。 3. 本项目已内置工作流文件：`.github/workflows/pages.yml`。 ## 2. 配置 VitePress ba"
     },
     {
@@ -59,7 +59,7 @@
         "submodule",
         "how-to"
       ],
-      "link": "/notes/git-submodule-quick-notes",
+      "link": "/notes/entries/git-submodule-quick-notes",
       "excerpt": "### 子模块 在已有项目中添加子模块 ```bash git submodule add <仓库地址> <本地路径> ``` 克隆一个包含子模块的项目 ```bash git clone --recursive <仓库地址> ``` 将一个已有的项目初始化子模块 ```bash git submodule update --init --recursive ```"
     },
     {
@@ -75,7 +75,7 @@
         "openknowforge",
         "local-dev"
       ],
-      "link": "/notes/openknowforge",
+      "link": "/notes/entries/openknowforge",
       "excerpt": "## 1. 准备环境（micromamba） ```bash micromamba create -y -n openknowforge python=3.11 micromamba run -n openknowforge pip install -r requirements.txt -r requirements-dev.txt ``` ## 2. 启动 API ```bash microm"
     }
   ]

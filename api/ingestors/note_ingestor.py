@@ -20,6 +20,7 @@ from api.ingestors.base import BaseIngestor
 ROOT_DIR = Path(__file__).resolve().parents[2]
 DOCS_DIR = ROOT_DIR / "docs"
 NOTES_DIR = DOCS_DIR / "notes"
+USER_NOTES_DIR = NOTES_DIR / "entries"
 IMAGES_DIR = DOCS_DIR / "assets" / "images"
 PUBLIC_DIR = DOCS_DIR / "public"
 NOTES_INDEX_PATH = NOTES_DIR / "index.md"
@@ -269,6 +270,7 @@ class NoteIngestor(BaseIngestor):
 
     def _ensure_dirs(self) -> None:
         NOTES_DIR.mkdir(parents=True, exist_ok=True)
+        USER_NOTES_DIR.mkdir(parents=True, exist_ok=True)
         IMAGES_DIR.mkdir(parents=True, exist_ok=True)
         PUBLIC_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -295,20 +297,33 @@ class NoteIngestor(BaseIngestor):
 
         candidate = slug
         counter = 2
-        while (NOTES_DIR / f"{candidate}.md").exists():
+        while self._slug_exists(candidate):
             candidate = f"{slug}-{counter}"
             counter += 1
         return candidate
+
+    def _slug_exists(self, slug: str) -> bool:
+        entries_target = USER_NOTES_DIR / f"{slug}.md"
+        if entries_target.exists():
+            return True
+
+        legacy_target = NOTES_DIR / f"{slug}.md"
+        return legacy_target.exists() and legacy_target.name not in RESERVED_NOTE_FILES
 
     def _resolve_note_path(self, slug: str) -> Path:
         normalized = slug.strip().lower()
         if not normalized or not SLUG_PATTERN.match(normalized):
             raise ValueError("invalid slug")
 
-        target = NOTES_DIR / f"{normalized}.md"
-        if not target.exists() or target.name in RESERVED_NOTE_FILES:
-            raise FileNotFoundError(f"note '{normalized}' not found")
-        return target
+        target = USER_NOTES_DIR / f"{normalized}.md"
+        if target.exists():
+            return target
+
+        legacy_target = NOTES_DIR / f"{normalized}.md"
+        if legacy_target.exists() and legacy_target.name not in RESERVED_NOTE_FILES:
+            return legacy_target
+
+        raise FileNotFoundError(f"note '{normalized}' not found")
 
     async def _save_images(self, images: list[str], slug: str) -> list[SavedImage]:
         saved: list[SavedImage] = []
@@ -410,7 +425,7 @@ class NoteIngestor(BaseIngestor):
         frontmatter_block = "---\n" + yaml.safe_dump(frontmatter, sort_keys=False).strip() + "\n---"
         markdown = frontmatter_block + "\n\n" + "\n".join(body_lines).rstrip() + "\n"
 
-        note_path = NOTES_DIR / f"{slug}.md"
+        note_path = USER_NOTES_DIR / f"{slug}.md"
         note_path.write_text(markdown, encoding="utf-8")
         return note_path
 
@@ -426,6 +441,8 @@ class NoteIngestor(BaseIngestor):
         lines: list[str] = [
             "---",
             "title: Notes",
+            "sidebar: false",
+            "aside: false",
             "---",
             "",
             "# Notes",
@@ -452,9 +469,17 @@ class NoteIngestor(BaseIngestor):
 
     def _collect_notes(self, include_excerpt: bool = False) -> list[dict[str, Any]]:
         notes: list[dict[str, Any]] = []
+        paths_by_slug: dict[str, Path] = {}
+        for path in sorted(USER_NOTES_DIR.glob("*.md")):
+            paths_by_slug[path.stem] = path
+
+        # Backward compatibility for repositories that still keep notes in docs/notes/*.md.
         for path in sorted(NOTES_DIR.glob("*.md")):
             if path.name in RESERVED_NOTE_FILES:
                 continue
+            paths_by_slug.setdefault(path.stem, path)
+
+        for slug, path in sorted(paths_by_slug.items(), key=lambda item: item[0]):
 
             text = path.read_text(encoding="utf-8")
             frontmatter = self._extract_frontmatter(text)
@@ -478,14 +503,18 @@ class NoteIngestor(BaseIngestor):
                 tags = [str(tags)]
 
             entry: dict[str, Any] = {
-                "slug": path.stem,
+                "slug": slug,
                 "title": title,
                 "created_at": created_at,
                 "updated_at": updated_at,
                 "submitted_at": submitted_at,
                 "date": (updated_at or created_at)[:10],
                 "tags": [str(tag) for tag in tags],
-                "link": f"/notes/{path.stem}",
+                "link": (
+                    f"/notes/entries/{slug}"
+                    if path.parent == USER_NOTES_DIR
+                    else f"/notes/{slug}"
+                ),
             }
 
             if include_excerpt:

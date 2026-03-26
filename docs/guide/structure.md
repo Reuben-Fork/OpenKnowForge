@@ -7,6 +7,9 @@ OpenKnowForge/
 │   └── ingestors/
 ├── docs/
 │   ├── notes/
+│   │   ├── index.md
+│   │   ├── explorer.md
+│   │   └── entries/
 │   ├── assets/images/
 │   └── .vitepress/
 ├── scripts/
@@ -17,7 +20,8 @@ OpenKnowForge/
 
 ## Notes Format
 
-Each note uses Markdown with frontmatter metadata.
+Structural pages stay in `docs/notes/` (`index.md` and `explorer.md`).
+User-authored notes are stored in `docs/notes/entries/` as Markdown with frontmatter metadata.
 
 ```md
 ---

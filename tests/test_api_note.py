@@ -14,12 +14,14 @@ from api.main import app
 def _override_paths(monkeypatch: pytest.MonkeyPatch, root: Path) -> None:
     docs_dir = root / 'docs'
     notes_dir = docs_dir / 'notes'
+    user_notes_dir = notes_dir / 'entries'
     images_dir = docs_dir / 'assets' / 'images'
     public_dir = docs_dir / 'public'
 
     monkeypatch.setattr(note_ingestor, 'ROOT_DIR', root)
     monkeypatch.setattr(note_ingestor, 'DOCS_DIR', docs_dir)
     monkeypatch.setattr(note_ingestor, 'NOTES_DIR', notes_dir)
+    monkeypatch.setattr(note_ingestor, 'USER_NOTES_DIR', user_notes_dir)
     monkeypatch.setattr(note_ingestor, 'IMAGES_DIR', images_dir)
     monkeypatch.setattr(note_ingestor, 'PUBLIC_DIR', public_dir)
     monkeypatch.setattr(note_ingestor, 'NOTES_INDEX_PATH', notes_dir / 'index.md')
@@ -87,7 +89,7 @@ def test_post_note_creates_markdown_assets_and_indexes(client: TestClient, tmp_p
     assert search_index_path.exists()
     search_index = json.loads(search_index_path.read_text(encoding='utf-8'))
     assert search_index['notes'][0]['title'] == 'Graph Theory'
-    assert search_index['notes'][0]['link'] == f'/notes/{slug}'
+    assert search_index['notes'][0]['link'] == f'/notes/entries/{slug}'
     assert 'math' in search_index['notes'][0]['tags']
     assert search_index['notes'][0]['updated_at'] == '2026-03-26T10:00:00+00:00'
 
