@@ -1,6 +1,7 @@
 ---
 title: Explore Notes
 sidebar: false
+aside: false
 ---
 
 # Explore Notes

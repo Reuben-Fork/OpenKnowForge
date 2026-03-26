@@ -1,6 +1,7 @@
 ---
 title: Notes
 sidebar: false
+aside: false
 ---
 
 # Notes

@@ -18,6 +18,26 @@
     linear-gradient(180deg, #070b13 0%, #0b1220 48%, #0a1120 100%);
 }
 
+@media (min-width: 960px) {
+  .VPDoc:not(.has-sidebar):not(.has-aside) .container {
+    max-width: 1280px;
+  }
+
+  .VPDoc:not(.has-sidebar):not(.has-aside) .content {
+    max-width: 1080px;
+  }
+}
+
+@media (min-width: 1440px) {
+  .VPDoc:not(.has-sidebar):not(.has-aside) .container {
+    max-width: 1360px;
+  }
+
+  .VPDoc:not(.has-sidebar):not(.has-aside) .content {
+    max-width: 1160px;
+  }
+}
+
 .vp-doc .notes-cards {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
