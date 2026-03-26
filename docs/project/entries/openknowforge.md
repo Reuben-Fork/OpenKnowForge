@@ -10,10 +10,10 @@ tags:
 - vitepress
 - ci
 created_at: '2026-03-26T00:00:00+00:00'
-updated_at: '2026-03-26T17:07:07+00:00'
-submitted_at: '2026-03-26T17:07:07+00:00'
+updated_at: '2026-03-26T17:08:56+00:00'
+submitted_at: '2026-03-26T17:08:56+00:00'
 date: '2026-03-26'
-word_count: 509
+word_count: 353
 image_count: 0
 type: guide
 status: published
@@ -46,32 +46,7 @@ npm run docs:dev
 
 目标：将本项目的 VitePress Web 站点自动部署到 GitHub Pages。
 
-### 1. VitePress base（默认无需配置）
-
-本项目默认已自动处理 `base`，包括 fork 场景在内，通常不需要手动配置：
-
-```ts
-const repoName = process.env.GITHUB_REPOSITORY?.split('/')[1]?.trim()
-const explicitBase = process.env.VITEPRESS_BASE?.trim()
-const isGitHubActions = process.env.GITHUB_ACTIONS === 'true'
-const isUserOrOrgSiteRepo = Boolean(repoName && repoName.toLowerCase().endsWith('.github.io'))
-const base = explicitBase
-  ? normalizeBasePath(explicitBase)
-  : isGitHubActions && repoName && !isUserOrOrgSiteRepo
-    ? normalizeBasePath(repoName)
-    : '/'
-```
-
-默认行为：
-1. 本地开发使用 `base: '/'`。
-2. GitHub Actions 构建项目页时自动使用 `/<repo>/`（例如 `/OpenKnowForge/`）。
-3. 若仓库名是 `xxx.github.io`（用户/组织主页），自动使用 `base: '/'`。
-
-仅在特殊部署路径下需要手动覆盖：
-1. 设置 `VITEPRESS_BASE`（例如 `/docs/` 或 `/`）。
-2. 如需覆盖 GitHub 社交链接，设置 `VITEPRESS_GITHUB_REPO`（`owner/repo` 或完整 GitHub URL）。
-
-### 2. 启用 GitHub Pages
+### 1. 启用 GitHub Pages
 
 进入仓库：`Settings -> Pages`
 
@@ -79,7 +54,7 @@ const base = explicitBase
 
 这是必须步骤，否则工作流不会真正发布到 Pages。
 
-### 3. 触发部署
+### 2. 触发部署
 
 每次 `commit` 并推送到 `main` 后，GitHub Actions 会自动触发 Pages 部署。
 
@@ -90,7 +65,7 @@ const base = explicitBase
 1. 必做：在 `Settings -> Pages` 把 Source 设为 `GitHub Actions`。
 2. 必做：将代码推送到 `main`，触发自动部署。
 3. 可选：设置 `VITEPRESS_GITHUB_REPO` 指向你自己的仓库（如 `your-name/your-repo`）。
-4. 通常不需要手改 `base`；仅在特殊路径部署时才通过 `VITEPRESS_BASE` 覆盖。
+4. 通常不需要额外配置；按默认工作流即可完成部署。
 
 ### Failed to load search index. Create notes via POST /note first.
 
@@ -104,6 +79,6 @@ const base = explicitBase
 
 ### GitHub Pages 页面样式异常或资源 404
 
-1. 优先检查 `docs/.vitepress/config.ts` 的 `base` 是否与仓库路径一致。
-2. 检查 `Settings -> Pages -> Source` 是否是 `GitHub Actions`。
+1. 检查 `Settings -> Pages -> Source` 是否是 `GitHub Actions`。
+2. 检查最近一次 `Deploy VitePress to GitHub Pages` 工作流是否成功。
 3. 等待 1~3 分钟后强制刷新页面，排除 CDN 缓存影响。
