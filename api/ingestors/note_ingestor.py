@@ -514,16 +514,7 @@ class NoteIngestor(BaseIngestor):
         for slug, source in source_by_slug.items():
             target = EN_NOTE_ENTRIES_DIR / f"{slug}.md"
             include_rel = Path(os.path.relpath(source, start=target.parent)).as_posix()
-            content = "\n".join(
-                [
-                    "---",
-                    "sidebar: false",
-                    "---",
-                    "",
-                    f"<!--@include: {include_rel} -->",
-                    "",
-                ]
-            )
+            content = "\n".join([f"<!--@include: {include_rel} -->", ""])
             if not target.exists() or target.read_text(encoding="utf-8") != content:
                 target.write_text(content, encoding="utf-8")
 

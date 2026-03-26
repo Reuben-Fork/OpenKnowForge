@@ -102,7 +102,9 @@ def test_post_note_creates_markdown_assets_and_indexes(client: TestClient, tmp_p
     assert '<NotesCards />' in notes_index_text
     en_alias_path = tmp_path / 'docs' / 'ui' / 'en' / 'notes' / 'entries' / f'{slug}.md'
     assert en_alias_path.exists()
-    assert f'../../../../project/entries/{slug}.md' in en_alias_path.read_text(encoding='utf-8')
+    alias_text = en_alias_path.read_text(encoding='utf-8')
+    assert f'../../../../project/entries/{slug}.md' in alias_text
+    assert 'sidebar: false' not in alias_text
 
     image_files = list((tmp_path / 'docs' / 'project' / 'images').glob('*.png'))
     assert len(image_files) == 1
