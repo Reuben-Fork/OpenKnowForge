@@ -382,6 +382,39 @@ def test_post_note_empty_title_fails_validation(client: TestClient) -> None:
     assert response.status_code == 422
 
 
+def test_word_count_includes_code_blocks_and_inline_code(client: TestClient) -> None:
+    create_resp = client.post(
+        '/note',
+        json={
+            'title': 'Code Count',
+            'content': '\n'.join(
+                [
+                    'before',
+                    '```bash',
+                    'git status',
+                    '```',
+                    '`inline_code`',
+                ]
+            ),
+            'tags': ['code'],
+            'images': [],
+            'type': 'note',
+            'status': 'published',
+            'related': [],
+            'submitted_at': '2026-03-26T16:00:00+00:00',
+        },
+    )
+    assert create_resp.status_code == 200
+    slug = create_resp.json()['result']['slug']
+    assert create_resp.json()['result']['word_count'] == 4
+
+    note_resp = client.get(f'/note/{slug}')
+    assert note_resp.status_code == 200
+    note = note_resp.json()['result']
+    assert note['word_count'] == 4
+    assert note['image_count'] == 0
+
+
 def test_existing_note_stats_are_backfilled_once(client: TestClient, tmp_path: Path) -> None:
     legacy_note_path = tmp_path / 'docs' / 'project' / 'entries' / 'legacy.md'
     legacy_note_path.parent.mkdir(parents=True, exist_ok=True)

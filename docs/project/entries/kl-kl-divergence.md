@@ -11,7 +11,7 @@ date: '2026-03-26'
 type: concept
 status: published
 related: []
-word_count: 132
+word_count: 131
 image_count: 0
 ---
 

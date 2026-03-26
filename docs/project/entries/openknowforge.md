@@ -15,7 +15,7 @@ status: published
 related:
 - notes-explorer
 - search-index
-word_count: 153
+word_count: 249
 image_count: 0
 ---
 

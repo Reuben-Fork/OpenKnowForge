@@ -12,7 +12,7 @@ type: guide
 status: published
 related:
 - git
-word_count: 40
+word_count: 51
 image_count: 0
 ---
 
