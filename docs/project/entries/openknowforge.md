@@ -1,5 +1,5 @@
 ---
-title: "OpenKnowForge \u9879\u76EE\u4F7F\u7528\u4E0E GitHub Pages \u90E8\u7F72"
+title: "OpenKnowForge\u5FEB\u901F\u5F00\u59CB"
 tags:
 - guide
 - how-to
@@ -10,10 +10,10 @@ tags:
 - vitepress
 - ci
 created_at: '2026-03-26T00:00:00+00:00'
-updated_at: '2026-03-26T16:33:40+00:00'
-submitted_at: '2026-03-26T16:33:40+00:00'
+updated_at: '2026-03-26T16:38:33+00:00'
+submitted_at: '2026-03-26T16:38:33+00:00'
 date: '2026-03-26'
-word_count: 692
+word_count: 690
 image_count: 0
 type: guide
 status: published
@@ -22,9 +22,9 @@ related:
 - search-index
 ---
 
-# OpenKnowForge 项目使用与 GitHub Pages 部署
+# OpenKnowForge快速开始
 
-## A. 本地开发与预览
+## 本地开发与预览
 
 ### 1. 准备环境（micromamba）
 
@@ -94,7 +94,7 @@ micromamba run -n openknowforge python -m pytest -q
 npm run docs:build
 ```
 
-## B. GitHub Pages 部署配置
+## GitHub Pages 部署配置
 
 目标：将本项目的 VitePress Web 站点自动部署到 GitHub Pages。
 
