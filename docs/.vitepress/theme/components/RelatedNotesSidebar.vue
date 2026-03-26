@@ -194,11 +194,12 @@ onBeforeUnmount(() => {
 }
 
 .related-notes-sidebar__title {
-  margin: 0 0 8px 0;
-  font-size: 12px;
-  letter-spacing: 0.03em;
-  text-transform: uppercase;
-  color: var(--vp-c-text-2);
+  margin: 0 0 10px 0;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: none;
+  color: var(--vp-c-text-1);
 }
 
 .related-notes-sidebar__meta {
