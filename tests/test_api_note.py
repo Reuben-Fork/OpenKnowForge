@@ -13,18 +13,35 @@ from api.main import app
 
 def _override_paths(monkeypatch: pytest.MonkeyPatch, root: Path) -> None:
     docs_dir = root / 'docs'
-    notes_dir = docs_dir / 'notes'
-    user_notes_dir = notes_dir / 'entries'
-    images_dir = docs_dir / 'assets' / 'images'
+    ui_dir = docs_dir / 'ui'
+    ui_zh_dir = ui_dir / 'zh'
+    ui_en_dir = ui_dir / 'en'
+    ui_notes_zh_dir = ui_zh_dir / 'notes'
+    ui_notes_en_dir = ui_en_dir / 'notes'
+    project_dir = docs_dir / 'project'
+    user_notes_dir = project_dir / 'entries'
+    images_dir = project_dir / 'images'
+    legacy_notes_dir = docs_dir / 'notes'
+    legacy_user_notes_dir = legacy_notes_dir / 'entries'
+    legacy_images_dir = docs_dir / 'assets' / 'images'
     public_dir = docs_dir / 'public'
 
     monkeypatch.setattr(note_ingestor, 'ROOT_DIR', root)
     monkeypatch.setattr(note_ingestor, 'DOCS_DIR', docs_dir)
-    monkeypatch.setattr(note_ingestor, 'NOTES_DIR', notes_dir)
+    monkeypatch.setattr(note_ingestor, 'UI_DIR', ui_dir)
+    monkeypatch.setattr(note_ingestor, 'UI_ZH_DIR', ui_zh_dir)
+    monkeypatch.setattr(note_ingestor, 'UI_EN_DIR', ui_en_dir)
+    monkeypatch.setattr(note_ingestor, 'UI_NOTES_ZH_DIR', ui_notes_zh_dir)
+    monkeypatch.setattr(note_ingestor, 'UI_NOTES_EN_DIR', ui_notes_en_dir)
+    monkeypatch.setattr(note_ingestor, 'PROJECT_DIR', project_dir)
     monkeypatch.setattr(note_ingestor, 'USER_NOTES_DIR', user_notes_dir)
     monkeypatch.setattr(note_ingestor, 'IMAGES_DIR', images_dir)
+    monkeypatch.setattr(note_ingestor, 'LEGACY_NOTES_DIR', legacy_notes_dir)
+    monkeypatch.setattr(note_ingestor, 'LEGACY_USER_NOTES_DIR', legacy_user_notes_dir)
+    monkeypatch.setattr(note_ingestor, 'LEGACY_IMAGES_DIR', legacy_images_dir)
     monkeypatch.setattr(note_ingestor, 'PUBLIC_DIR', public_dir)
-    monkeypatch.setattr(note_ingestor, 'NOTES_INDEX_PATH', notes_dir / 'index.md')
+    monkeypatch.setattr(note_ingestor, 'ZH_NOTES_INDEX_PATH', ui_notes_zh_dir / 'index.md')
+    monkeypatch.setattr(note_ingestor, 'EN_NOTES_INDEX_PATH', ui_notes_en_dir / 'index.md')
     monkeypatch.setattr(note_ingestor, 'SEARCH_INDEX_PATH', public_dir / 'search-index.json')
 
 
@@ -77,12 +94,12 @@ def test_post_note_creates_markdown_assets_and_indexes(client: TestClient, tmp_p
     assert 'created_at: ' in note_text
     assert 'updated_at: ' in note_text
     assert 'submitted_at: ' in note_text
-    assert '<img src="/assets/images/' in note_text
+    assert '<img src="/project/images/' in note_text
 
-    notes_index_text = (tmp_path / 'docs' / 'notes' / 'index.md').read_text(encoding='utf-8')
+    notes_index_text = (tmp_path / 'docs' / 'ui' / 'zh' / 'notes' / 'index.md').read_text(encoding='utf-8')
     assert '<NotesCards />' in notes_index_text
 
-    image_files = list((tmp_path / 'docs' / 'assets' / 'images').glob('*.png'))
+    image_files = list((tmp_path / 'docs' / 'project' / 'images').glob('*.png'))
     assert len(image_files) == 1
 
     search_index_path = tmp_path / 'docs' / 'public' / 'search-index.json'
@@ -244,7 +261,7 @@ def test_delete_note_removes_file_and_assets(client: TestClient, tmp_path: Path)
     payload = create_resp.json()['result']
     slug = payload['slug']
 
-    image_files = list((tmp_path / 'docs' / 'assets' / 'images').glob('*.png'))
+    image_files = list((tmp_path / 'docs' / 'project' / 'images').glob('*.png'))
     assert len(image_files) == 1
     assert (tmp_path / payload['note_path']).exists()
 

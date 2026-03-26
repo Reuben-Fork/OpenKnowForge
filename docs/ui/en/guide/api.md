@@ -78,7 +78,7 @@ curl -X PUT http://127.0.0.1:8000/note/<slug> \
 
 ## 4) Delete note `DELETE /note/{slug}`
 
-Deletes the note file and removes local image assets referenced in its body (`/assets/images/...`).
+Deletes the note file and removes local image assets referenced in its body (`/project/images/...`).
 The system then rebuilds indexes and writes a git commit record.
 
 ```bash

@@ -19,11 +19,20 @@ from api.ingestors.base import BaseIngestor
 
 ROOT_DIR = Path(__file__).resolve().parents[2]
 DOCS_DIR = ROOT_DIR / "docs"
-NOTES_DIR = DOCS_DIR / "notes"
-USER_NOTES_DIR = NOTES_DIR / "entries"
-IMAGES_DIR = DOCS_DIR / "assets" / "images"
+UI_DIR = DOCS_DIR / "ui"
+UI_ZH_DIR = UI_DIR / "zh"
+UI_EN_DIR = UI_DIR / "en"
+UI_NOTES_ZH_DIR = UI_ZH_DIR / "notes"
+UI_NOTES_EN_DIR = UI_EN_DIR / "notes"
+PROJECT_DIR = DOCS_DIR / "project"
+USER_NOTES_DIR = PROJECT_DIR / "entries"
+IMAGES_DIR = PROJECT_DIR / "images"
+LEGACY_NOTES_DIR = DOCS_DIR / "notes"
+LEGACY_USER_NOTES_DIR = LEGACY_NOTES_DIR / "entries"
+LEGACY_IMAGES_DIR = DOCS_DIR / "assets" / "images"
 PUBLIC_DIR = DOCS_DIR / "public"
-NOTES_INDEX_PATH = NOTES_DIR / "index.md"
+ZH_NOTES_INDEX_PATH = UI_NOTES_ZH_DIR / "index.md"
+EN_NOTES_INDEX_PATH = UI_NOTES_EN_DIR / "index.md"
 SEARCH_INDEX_PATH = PUBLIC_DIR / "search-index.json"
 
 DATA_URL_PATTERN = re.compile(r"^data:(?P<mime>[-\w.]+/[-\w.+]+);base64,(?P<data>.+)$")
@@ -243,10 +252,13 @@ class NoteIngestor(BaseIngestor):
         deleted_images: list[str] = []
         for src in current.get("image_paths") or []:
             image_src = str(src).strip()
-            if not image_src.startswith("/assets/images/"):
+            if image_src.startswith("/project/images/"):
+                image_path = IMAGES_DIR / Path(image_src).name
+            elif image_src.startswith("/assets/images/"):
+                image_path = LEGACY_IMAGES_DIR / Path(image_src).name
+            else:
                 continue
 
-            image_path = IMAGES_DIR / Path(image_src).name
             if image_path.exists():
                 image_path.unlink()
                 deleted_images.append(str(image_path.relative_to(ROOT_DIR)))
@@ -269,7 +281,8 @@ class NoteIngestor(BaseIngestor):
         }
 
     def _ensure_dirs(self) -> None:
-        NOTES_DIR.mkdir(parents=True, exist_ok=True)
+        UI_NOTES_ZH_DIR.mkdir(parents=True, exist_ok=True)
+        UI_NOTES_EN_DIR.mkdir(parents=True, exist_ok=True)
         USER_NOTES_DIR.mkdir(parents=True, exist_ok=True)
         IMAGES_DIR.mkdir(parents=True, exist_ok=True)
         PUBLIC_DIR.mkdir(parents=True, exist_ok=True)
@@ -303,11 +316,14 @@ class NoteIngestor(BaseIngestor):
         return candidate
 
     def _slug_exists(self, slug: str) -> bool:
-        entries_target = USER_NOTES_DIR / f"{slug}.md"
-        if entries_target.exists():
+        entries_targets = [
+            USER_NOTES_DIR / f"{slug}.md",
+            LEGACY_USER_NOTES_DIR / f"{slug}.md",
+        ]
+        if any(path.exists() for path in entries_targets):
             return True
 
-        legacy_target = NOTES_DIR / f"{slug}.md"
+        legacy_target = LEGACY_NOTES_DIR / f"{slug}.md"
         return legacy_target.exists() and legacy_target.name not in RESERVED_NOTE_FILES
 
     def _resolve_note_path(self, slug: str) -> Path:
@@ -319,7 +335,11 @@ class NoteIngestor(BaseIngestor):
         if target.exists():
             return target
 
-        legacy_target = NOTES_DIR / f"{normalized}.md"
+        legacy_entries_target = LEGACY_USER_NOTES_DIR / f"{normalized}.md"
+        if legacy_entries_target.exists():
+            return legacy_entries_target
+
+        legacy_target = LEGACY_NOTES_DIR / f"{normalized}.md"
         if legacy_target.exists() and legacy_target.name not in RESERVED_NOTE_FILES:
             return legacy_target
 
@@ -339,7 +359,7 @@ class NoteIngestor(BaseIngestor):
             target.write_bytes(raw_bytes)
             saved.append(
                 SavedImage(
-                    markdown_path=f"/assets/images/{filename}",
+                    markdown_path=f"/project/images/{filename}",
                     filesystem_path=target,
                 )
             )
@@ -438,7 +458,7 @@ class NoteIngestor(BaseIngestor):
         return "\n".join(lines).strip()
 
     def _rebuild_notes_index(self) -> None:
-        lines: list[str] = [
+        zh_lines: list[str] = [
             "---",
             "title: Notes",
             "sidebar: false",
@@ -455,8 +475,26 @@ class NoteIngestor(BaseIngestor):
             "",
             "<NotesCards />",
         ]
+        en_lines: list[str] = [
+            "---",
+            "title: Notes",
+            "sidebar: false",
+            "aside: false",
+            "prev: false",
+            "next: false",
+            "---",
+            "",
+            "# Notes",
+            "",
+            "Browse all notes as rounded cards.",
+            "",
+            "Use [Explore Notes](/en/notes/explorer) for a time-sorted title list.",
+            "",
+            "<NotesCards />",
+        ]
 
-        NOTES_INDEX_PATH.write_text("\n".join(lines).rstrip() + "\n", encoding="utf-8")
+        ZH_NOTES_INDEX_PATH.write_text("\n".join(zh_lines).rstrip() + "\n", encoding="utf-8")
+        EN_NOTES_INDEX_PATH.write_text("\n".join(en_lines).rstrip() + "\n", encoding="utf-8")
 
     def _rebuild_search_index(self) -> None:
         notes = self._collect_notes(include_excerpt=True)
@@ -475,8 +513,12 @@ class NoteIngestor(BaseIngestor):
         for path in sorted(USER_NOTES_DIR.glob("*.md")):
             paths_by_slug[path.stem] = path
 
+        # Backward compatibility for repositories that still keep notes in docs/notes/entries/*.md.
+        for path in sorted(LEGACY_USER_NOTES_DIR.glob("*.md")):
+            paths_by_slug.setdefault(path.stem, path)
+
         # Backward compatibility for repositories that still keep notes in docs/notes/*.md.
-        for path in sorted(NOTES_DIR.glob("*.md")):
+        for path in sorted(LEGACY_NOTES_DIR.glob("*.md")):
             if path.name in RESERVED_NOTE_FILES:
                 continue
             paths_by_slug.setdefault(path.stem, path)
@@ -512,11 +554,9 @@ class NoteIngestor(BaseIngestor):
                 "submitted_at": submitted_at,
                 "date": (updated_at or created_at)[:10],
                 "tags": [str(tag) for tag in tags],
-                "link": (
-                    f"/notes/entries/{slug}"
-                    if path.parent == USER_NOTES_DIR
-                    else f"/notes/{slug}"
-                ),
+                "link": f"/notes/entries/{slug}"
+                if path.parent in (USER_NOTES_DIR, LEGACY_USER_NOTES_DIR)
+                else f"/notes/{slug}",
             }
 
             if include_excerpt:
@@ -579,8 +619,20 @@ class NoteIngestor(BaseIngestor):
         return parsed.timestamp()
 
     def _git_commit(self, slug: str, action: str) -> dict[str, Any]:
+        stage_candidates = [
+            "docs/ui",
+            "docs/project",
+            "docs/public/search-index.json",
+            "docs/notes",
+            "docs/assets/images",
+        ]
+        stage_paths: list[str] = []
+        for rel in stage_candidates:
+            if rel.endswith(".json") or (ROOT_DIR / rel).exists():
+                stage_paths.append(rel)
+
         add = subprocess.run(
-            ["git", "add", "docs/notes", "docs/assets/images", "docs/public/search-index.json"],
+            ["git", "add", "--", *stage_paths],
             cwd=ROOT_DIR,
             capture_output=True,
             text=True,

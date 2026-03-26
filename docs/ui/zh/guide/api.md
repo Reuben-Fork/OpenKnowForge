@@ -78,7 +78,7 @@ curl -X PUT http://127.0.0.1:8000/note/<slug> \
 
 ## 4) 删除笔记 `DELETE /note/{slug}`
 
-删除笔记文件，并清理该笔记在正文中引用的本地图片资源（`/assets/images/...`）。  
+删除笔记文件，并清理该笔记在正文中引用的本地图片资源（`/project/images/...`）。  
 删除后会自动重建索引并提交 git 记录。
 
 ```bash

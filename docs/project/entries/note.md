@@ -18,4 +18,4 @@ related: []
 
 ## Images
 
-<img src="/assets/images/note-1-76363d4f6052.png" alt="美图分享" loading="lazy" />
+<img src="/project/images/note-1-76363d4f6052.png" alt="美图分享" loading="lazy" />

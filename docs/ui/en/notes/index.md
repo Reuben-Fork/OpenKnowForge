@@ -8,7 +8,7 @@ next: false
 
 # Notes
 
-Live note catalog as rounded cards.
+Browse all notes as rounded cards.
 
 Use [Explore Notes](/en/notes/explorer) for a time-sorted title list.
 

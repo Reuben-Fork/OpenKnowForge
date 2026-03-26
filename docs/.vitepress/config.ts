@@ -80,6 +80,18 @@ export default defineConfig({
   description: 'API-driven, git-backed knowledge base',
   base,
   cleanUrls: true,
+  rewrites: (id) => {
+    if (id.startsWith('ui/zh/')) {
+      return id.slice('ui/zh/'.length)
+    }
+    if (id.startsWith('ui/en/')) {
+      return `en/${id.slice('ui/en/'.length)}`
+    }
+    if (id.startsWith('project/entries/')) {
+      return `notes/entries/${id.slice('project/entries/'.length)}`
+    }
+    return id
+  },
   markdown: {
     math: true
   },

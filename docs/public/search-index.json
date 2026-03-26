@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-26T13:43:17+00:00",
+  "generatedAt": "2026-03-26T15:02:47+00:00",
   "notes": [
     {
       "slug": "note",
@@ -13,7 +13,7 @@
         "share"
       ],
       "link": "/notes/entries/note",
-      "excerpt": "美图分享 ## Images <img src=\"/assets/images/note-1-76363d4f6052.png\" alt=\"美图分享\" loading=\"lazy\" />"
+      "excerpt": "美图分享 ## Images <img src=\"/project/images/note-1-76363d4f6052.png\" alt=\"美图分享\" loading=\"lazy\" />"
     },
     {
       "slug": "kl-kl-divergence",

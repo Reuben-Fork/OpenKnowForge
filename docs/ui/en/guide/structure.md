@@ -6,11 +6,13 @@ OpenKnowForge/
 │   ├── main.py
 │   └── ingestors/
 ├── docs/
-│   ├── notes/
-│   │   ├── index.md
-│   │   ├── explorer.md
-│   │   └── entries/
-│   ├── assets/images/
+│   ├── ui/
+│   │   ├── zh/
+│   │   ├── en/
+│   │   └── assets/images/
+│   ├── project/
+│   │   ├── entries/
+│   │   └── images/
 │   └── .vitepress/
 ├── scripts/
 ├── .github/workflows/
@@ -20,8 +22,9 @@ OpenKnowForge/
 
 ## Notes Format
 
-Structural pages stay in `docs/notes/` (`index.md` and `explorer.md`).
-User-authored notes are stored in `docs/notes/entries/` as Markdown with frontmatter metadata.
+UI pages are stored in `docs/ui/zh/` and `docs/ui/en/`.
+User-authored notes are stored in `docs/project/entries/` as Markdown with frontmatter metadata.
+User-uploaded images are stored in `docs/project/images/`.
 
 ```md
 ---

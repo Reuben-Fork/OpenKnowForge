@@ -6,7 +6,7 @@ prev: false
 next: false
 ---
 
-# 笔记
+# Notes
 
 以圆角卡片方式展示全部笔记。
 

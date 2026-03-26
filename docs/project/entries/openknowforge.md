@@ -55,7 +55,7 @@ curl -X POST http://127.0.0.1:8000/note \
 ```
 
 写入后会自动生成：
-- `docs/notes/entries/<slug>.md`
+- `docs/project/entries/<slug>.md`
 - `docs/public/search-index.json`
 - 可能的 git 自动提交（失败不阻塞写入）
 
