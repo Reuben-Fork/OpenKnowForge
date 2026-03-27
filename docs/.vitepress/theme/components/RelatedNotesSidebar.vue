@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useRoute, withBase } from 'vitepress'
 
 type NoteItem = {
@@ -136,13 +136,6 @@ const relatedNotes = computed<RelatedNote[]>(() => {
     })
 })
 
-function syncBodyClass(active: boolean): void {
-  if (typeof document === 'undefined') {
-    return
-  }
-  document.body.classList.toggle('related-sidebar-mode', active)
-}
-
 async function loadNotes(): Promise<void> {
   if (!enabled.value) {
     notes.value = []
@@ -181,7 +174,6 @@ async function loadNotes(): Promise<void> {
 watch(
   () => enabled.value,
   (value) => {
-    syncBodyClass(value)
     if (value) {
       void loadNotes()
     } else {
@@ -199,73 +191,74 @@ watch(
     }
   }
 )
-
-onMounted(() => {
-  syncBodyClass(enabled.value)
-})
-
-onBeforeUnmount(() => {
-  syncBodyClass(false)
-})
 </script>
 
 <template>
-  <section v-if="enabled" class="related-notes-sidebar">
-    <p class="related-notes-sidebar__title">{{ uiText.title }}</p>
-    <p v-if="loading" class="related-notes-sidebar__meta">{{ uiText.loading }}</p>
-    <p v-else-if="!currentNote" class="related-notes-sidebar__meta">{{ uiText.notIndexed }}</p>
-    <p v-else-if="(currentNote.tags || []).length === 0" class="related-notes-sidebar__meta">{{ uiText.noTag }}</p>
-    <ul v-else-if="relatedNotes.length > 0" class="related-notes-sidebar__list">
-      <li v-for="note in relatedNotes" :key="`${note.link}-${note.overlap}`" class="related-notes-sidebar__item">
-        <a :href="resolveLink(note.link)" class="related-notes-sidebar__link">{{ note.title }}</a>
+  <section v-if="enabled" class="related-notes-panel">
+    <p class="related-notes-panel__title">{{ uiText.title }}</p>
+    <p v-if="loading" class="related-notes-panel__meta">{{ uiText.loading }}</p>
+    <p v-else-if="!currentNote" class="related-notes-panel__meta">{{ uiText.notIndexed }}</p>
+    <p v-else-if="(currentNote.tags || []).length === 0" class="related-notes-panel__meta">{{ uiText.noTag }}</p>
+    <ul v-else-if="relatedNotes.length > 0" class="related-notes-panel__list">
+      <li v-for="note in relatedNotes" :key="`${note.link}-${note.overlap}`" class="related-notes-panel__item">
+        <a :href="resolveLink(note.link)" class="related-notes-panel__link">{{ note.title }}</a>
       </li>
     </ul>
-    <p v-else class="related-notes-sidebar__meta">{{ uiText.empty }}</p>
+    <p v-else class="related-notes-panel__meta">{{ uiText.empty }}</p>
   </section>
 </template>
 
 <style scoped>
-.related-notes-sidebar {
-  margin: 0 0 12px;
+.related-notes-panel {
+  margin-top: 18px;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 14px;
+  padding: 14px;
+  background: linear-gradient(170deg, rgba(255, 255, 255, 0.88), rgba(240, 253, 250, 0.7));
 }
 
-.related-notes-sidebar__title {
-  margin: 0 0 10px 0;
-  font-size: 13px;
+.related-notes-panel__title {
+  margin: 0 0 10px;
+  font-size: 14px;
   font-weight: 700;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.02em;
   text-transform: none;
   color: var(--vp-c-text-1);
 }
 
-.related-notes-sidebar__meta {
+.related-notes-panel__meta {
   margin: 0;
-  font-size: 12px;
+  font-size: 13px;
   color: var(--vp-c-text-2);
 }
 
-.related-notes-sidebar__list {
+.related-notes-panel__list {
   margin: 0;
   padding: 0;
   list-style: none;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
 }
 
-.related-notes-sidebar__item {
+.related-notes-panel__item {
   margin: 0;
 }
 
-.related-notes-sidebar__link {
+.related-notes-panel__link {
   display: inline-block;
   font-size: 13px;
-  line-height: 1.3;
+  line-height: 1.35;
   color: var(--vp-c-text-2);
   text-decoration: none;
 }
 
-.related-notes-sidebar__link:hover {
+.related-notes-panel__link:hover {
   color: var(--vp-c-brand-1);
+}
+
+.dark .related-notes-panel {
+  border-color: rgba(148, 163, 184, 0.3);
+  background: linear-gradient(160deg, rgba(15, 23, 42, 0.75), rgba(6, 78, 59, 0.26));
 }
 </style>

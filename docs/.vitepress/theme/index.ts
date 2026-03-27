@@ -13,8 +13,8 @@ const theme: Theme = {
   extends: DefaultTheme,
   Layout: () =>
     h(DefaultTheme.Layout, null, {
-      'sidebar-nav-before': () => h(RelatedNotesSidebar),
-      'doc-before': () => h(NoteStatsBar)
+      'doc-before': () => h(NoteStatsBar),
+      'doc-footer-before': () => h(RelatedNotesSidebar)
     }),
   enhanceApp({ app }) {
     app.component('NoteExplorer', NoteExplorer)

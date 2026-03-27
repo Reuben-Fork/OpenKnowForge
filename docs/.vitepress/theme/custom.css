@@ -112,10 +112,6 @@ img {
   height: auto;
 }
 
-.related-sidebar-mode .VPSidebar .nav > .group {
-  display: none;
-}
-
 /*
  * Keep deep outline levels visible while automatically collapsing
  * inactive branches based on the current active heading.
