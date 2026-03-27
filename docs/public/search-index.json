@@ -1,6 +1,28 @@
 {
-  "generatedAt": "2026-03-27T04:11:10+00:00",
+  "generatedAt": "2026-03-27T04:17:05+00:00",
   "notes": [
+    {
+      "slug": "post-training-rl",
+      "title": "Post-Training 详解：RL 方法论",
+      "created_at": "2026-03-27T04:17:05+00:00",
+      "updated_at": "2026-03-27T04:17:05+00:00",
+      "submitted_at": "2026-03-27T04:17:05+00:00",
+      "date": "2026-03-27",
+      "word_count": 372,
+      "image_count": 0,
+      "status": "mature",
+      "tags": [
+        "AI",
+        "Post-Training",
+        "RL",
+        "PPO",
+        "GRPO",
+        "DPO",
+        "ML"
+      ],
+      "link": "/notes/entries/post-training-rl",
+      "excerpt": "# Post-Training 详解 ## 数据量需求 - 需要几十M到几B的数据 - 用于模型的微调和优化 ## 常用方法 ### Online RL（在线强化学习） 智能体在训练过程中持续与环境进行交互，数据的采集和训练是交替循环进行的。 #### PPO (Proximal Policy Optimization) - RM 给出绝对分数的估计值 - 梯度/优势为：**实际得分 - Crit"
+    },
     {
       "slug": "openknowforge-2",
       "title": "OpenKnowForge 测试笔记",
