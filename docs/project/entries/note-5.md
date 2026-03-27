@@ -8,7 +8,7 @@ date: '2026-03-27'
 word_count: 5
 image_count: 0
 type: note
-status: draft
+status: mature
 related: []
 ---
 
