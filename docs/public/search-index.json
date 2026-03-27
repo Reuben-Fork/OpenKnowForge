@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-27T06:11:17+00:00",
+  "generatedAt": "2026-03-27T06:12:43+00:00",
   "notes": [
     {
       "slug": "api",
@@ -20,23 +20,6 @@
       ],
       "link": "/notes/entries/api",
       "excerpt": "大模型 API的输入和输出 token通常要分别计费 ## 输入阶段 - 将输入prompt做embedding - 进行一次前向传播 - 保存KV cache ## 输出阶段 - 自回归生成并保存新token - 每次都要访问缓存、前向传播 - 访存带宽大，时间消耗长，计算次数多 - 会更贵一些"
-    },
-    {
-      "slug": "note-2",
-      "title": "项目进度更新",
-      "created_at": "2026-03-27T04:58:33+00:00",
-      "updated_at": "2026-03-27T04:58:33+00:00",
-      "submitted_at": "2026-03-27T04:58:33+00:00",
-      "date": "2026-03-27",
-      "word_count": 8,
-      "image_count": 0,
-      "status": "mature",
-      "tags": [
-        "项目",
-        "进度"
-      ],
-      "link": "/notes/entries/note-2",
-      "excerpt": "完成了数据库设计"
     },
     {
       "slug": "note-3",
