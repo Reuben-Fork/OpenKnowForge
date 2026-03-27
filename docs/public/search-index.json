@@ -1,6 +1,24 @@
 {
-  "generatedAt": "2026-03-27T04:58:07+00:00",
+  "generatedAt": "2026-03-27T04:58:32+00:00",
   "notes": [
+    {
+      "slug": "ai",
+      "title": "我对 AI 的想法",
+      "created_at": "2026-03-27T04:58:32+00:00",
+      "updated_at": "2026-03-27T04:58:32+00:00",
+      "submitted_at": "2026-03-27T04:58:32+00:00",
+      "date": "2026-03-27",
+      "word_count": 15,
+      "image_count": 0,
+      "status": "mature",
+      "tags": [
+        "思考",
+        "AI",
+        "个人笔记"
+      ],
+      "link": "/notes/entries/ai",
+      "excerpt": "今天思考了一些关于 AI 伦理的问题..."
+    },
     {
       "slug": "post-training-rl-2",
       "title": "Post-Training 详解：RL 方法论",
