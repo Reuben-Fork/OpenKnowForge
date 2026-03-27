@@ -2,14 +2,102 @@
 
 [中文](README.zh-CN.md)
 
-OpenKnowForge is an API-first knowledge base project built with FastAPI + Markdown + VitePress + GitHub Pages.
+OpenKnowForge is an API-native, Git-backed knowledge base system.
+It connects note authoring, metadata governance, static publishing, and version traceability into one workflow.
 
-## Design Philosophy
+![Home](assets/Home.png)
 
-- Keep knowledge as plain Markdown files so content stays portable.
-- Use HTTP APIs for programmable note creation, update, search, and publishing workflows.
-- Keep UI static and deployment simple via GitHub Pages.
-- Make every content change traceable through Git history.
+## Why This Project Matters
+
+OpenKnowForge is not just another markdown notebook.
+Its core value is turning knowledge management into an engineering system:
+
+- Programmable knowledge operations: notes are managed via HTTP APIs, so scripts/agents can create and maintain content reliably.
+- Git-level governance: every note change is committed, auditable, and easy to roll back.
+- Publish-ready architecture: data is edited dynamically but published as static pages for speed and low ops cost.
+- Structured knowledge schema: each note carries metadata (status, timestamps, tags, stats), enabling deterministic indexing and filtering.
+- Team-friendly delivery: local development is lightweight, deployment is CI-driven, and output is accessible through GitHub Pages.
+
+## Core Capabilities (Implemented)
+
+### 1) Full note lifecycle APIs
+
+- Create note: `POST /note`
+- Read note: `GET /note/{slug}`
+- Update note: `PUT /note/{slug}`
+- Update status only: `PATCH /note/{slug}/status`
+- Delete note: `DELETE /note/{slug}`
+- List all notes: `GET /notes`
+- List drafts: `GET /notes/drafts`
+- Search notes: `GET /notes/search`
+- Push repository: `POST /git/push`
+
+### 2) Strong metadata model
+
+Each note maintains:
+
+- `status`: `mature` or `draft`
+- `created_at`, `updated_at`, `submitted_at`
+- `tags`, `related`, `type`
+- `word_count`, `image_count`
+
+This supports reliable sorting, filtering, and UI rendering.
+
+### 3) Reliable content stats
+
+Word/image statistics are calculated when creating and editing notes.
+Existing notes are also backfilled automatically on startup when needed.
+
+### 4) Image ingestion and normalization
+
+The API accepts image inputs as:
+
+- Data URL
+- HTTP(S) URL
+- Base64 string
+
+Images are stored under `docs/project/images/` and linked into the note body.
+
+### 5) Auto index and site sync
+
+After note changes, the system automatically rebuilds:
+
+- Notes index pages
+- English note alias files
+- `docs/public/search-index.json`
+
+So local docs preview and static site outputs stay in sync with the latest content.
+
+### 6) Built-in Git traceability
+
+Note create/update/delete operations auto-stage and auto-commit content updates.
+The API response includes commit hash/time when a commit is generated.
+
+## Architecture
+
+```text
+Author / Script / Agent
+          |
+          v
+  FastAPI (note APIs)
+          |
+          v
+Markdown + Frontmatter + Assets (Git)
+          |
+          v
+VitePress static build
+          |
+          v
+GitHub Pages
+```
+
+## Tech Stack
+
+- Backend API: FastAPI
+- Content format: Markdown + YAML frontmatter
+- Site generator: VitePress
+- Index/search source: `docs/public/search-index.json`
+- CI/CD: GitHub Actions + GitHub Pages
 
 ## Quick Start
 
@@ -20,13 +108,14 @@ pip install -r requirements.txt
 npm install
 ```
 
-### 2) Start API
+### 2) Start API service
 
 ```bash
 python -m uvicorn api.main:app --reload
 ```
 
-API base URL: `http://127.0.0.1:8000`
+- API base URL: `http://127.0.0.1:8000`
+- Health check: `GET /health`
 
 ### 3) Start local docs preview
 
@@ -34,22 +123,34 @@ API base URL: `http://127.0.0.1:8000`
 npm run docs:dev
 ```
 
-Preview URL: `http://127.0.0.1:5173`
+- Docs preview: `http://127.0.0.1:5173`
+- Notes (zh): `http://127.0.0.1:5173/notes/`
+- Notes (en): `http://127.0.0.1:5173/en/notes/`
 
-## GitHub Pages
+## GitHub Pages Deployment
 
-This repo already includes a Pages workflow at `.github/workflows/pages.yml`.
+This repository already contains workflow config at:
 
-To deploy:
+- `.github/workflows/pages.yml`
 
-1. Enable GitHub Pages in repository settings (Build and deployment -> Source: GitHub Actions).
+Deploy steps:
+
+1. In GitHub repo settings, enable Pages and choose `GitHub Actions` as source.
 2. Push commits to `main`.
-3. GitHub Actions will build and publish docs automatically.
+3. The Pages workflow builds and publishes docs automatically.
+
+## Project Layout (High-level)
+
+- API code: `api/`
+- UI/guide docs: `docs/ui/`
+- User notes: `docs/project/entries/`
+- User images: `docs/project/images/`
+- Search index: `docs/public/search-index.json`
 
 ## Documentation
 
-- Guide (CN): `docs/ui/zh/guide/`
-- Guide (EN): `docs/ui/en/guide/`
+- Chinese guide: `docs/ui/zh/guide/`
+- English guide: `docs/ui/en/guide/`
 
 ## License
 
