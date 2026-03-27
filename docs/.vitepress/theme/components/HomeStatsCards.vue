@@ -25,16 +25,14 @@ const uiText = computed(() =>
         loadError: 'Failed to load stats from search-index.json.',
         notes: 'Total Notes',
         words: 'Total Words',
-        images: 'Total Images',
-        scope: 'Scope: notes under project/entries'
+        images: 'Total Images'
       }
     : {
         loading: '正在加载统计...',
         loadError: '读取 search-index.json 统计失败。',
         notes: '笔记总数',
         words: '笔记总字数',
-        images: '笔记图片总数',
-        scope: '统计范围：project/entries 下的笔记'
+        images: '笔记图片总数'
       }
 )
 
@@ -131,8 +129,6 @@ onBeforeUnmount(() => {
         <p class="home-stats-cards__value">{{ formatNumber(card.value) }}</p>
       </article>
     </div>
-
-    <p v-if="!loading && !error" class="home-stats-cards__scope">{{ uiText.scope }}</p>
   </section>
 </template>
 
@@ -175,12 +171,6 @@ onBeforeUnmount(() => {
   font-size: 28px;
   line-height: 1.1;
   font-weight: 700;
-}
-
-.home-stats-cards__scope {
-  margin: 10px 0 0;
-  font-size: 12px;
-  color: var(--vp-c-text-2);
 }
 
 @media (min-width: 720px) {
