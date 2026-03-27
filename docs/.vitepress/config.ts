@@ -37,6 +37,28 @@ const sharedSocialLinks: DefaultTheme.SocialLink[] = [
   { icon: 'github', link: githubRepoLink }
 ]
 
+const zhGuideSidebar: DefaultTheme.SidebarItem[] = [
+  {
+    text: '指南',
+    items: [
+      { text: '快速开始', link: '/guide/quick-start' },
+      { text: 'API', link: '/guide/api' },
+      { text: '结构', link: '/guide/structure' }
+    ]
+  }
+]
+
+const enGuideSidebar: DefaultTheme.SidebarItem[] = [
+  {
+    text: 'Guide',
+    items: [
+      { text: 'Quick Start', link: '/en/guide/quick-start' },
+      { text: 'API', link: '/en/guide/api' },
+      { text: 'Structure', link: '/en/guide/structure' }
+    ]
+  }
+]
+
 const zhThemeConfig: DefaultTheme.Config = {
   langMenuLabel: '语言',
   outline: {
@@ -47,27 +69,11 @@ const zhThemeConfig: DefaultTheme.Config = {
     { text: '首页', link: '/' },
     { text: '笔记', link: '/notes/' },
     { text: '探索', link: '/notes/explorer' },
-    { text: '指南', link: '/guide/api' }
+    { text: '指南', link: '/guide/quick-start' }
   ],
   sidebar: {
-    '/guide/': [
-      {
-        text: '指南',
-        items: [
-          { text: 'API', link: '/guide/api' },
-          { text: '结构', link: '/guide/structure' }
-        ]
-      }
-    ],
-    '/notes/': [
-      {
-        text: '笔记',
-        items: [
-          { text: '全部笔记', link: '/notes/' },
-          { text: '探索', link: '/notes/explorer' }
-        ]
-      }
-    ]
+    '/guide': zhGuideSidebar,
+    '/guide/': zhGuideSidebar
   },
   socialLinks: sharedSocialLinks,
   search: {
@@ -85,27 +91,11 @@ const enThemeConfig: DefaultTheme.Config = {
     { text: 'Home', link: '/en/' },
     { text: 'Notes', link: '/en/notes/' },
     { text: 'Explore', link: '/en/notes/explorer' },
-    { text: 'Guide', link: '/en/guide/api' }
+    { text: 'Guide', link: '/en/guide/quick-start' }
   ],
   sidebar: {
-    '/en/guide/': [
-      {
-        text: 'Guide',
-        items: [
-          { text: 'API', link: '/en/guide/api' },
-          { text: 'Structure', link: '/en/guide/structure' }
-        ]
-      }
-    ],
-    '/en/notes/': [
-      {
-        text: 'Notes',
-        items: [
-          { text: 'All Notes', link: '/en/notes/' },
-          { text: 'Explore', link: '/en/notes/explorer' }
-        ]
-      }
-    ]
+    '/en/guide': enGuideSidebar,
+    '/en/guide/': enGuideSidebar
   },
   socialLinks: sharedSocialLinks,
   search: {

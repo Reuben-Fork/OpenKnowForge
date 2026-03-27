@@ -9,8 +9,8 @@ hero:
       text: 浏览笔记
       link: /notes/
     - theme: alt
-      text: API 教程
-      link: /guide/api
+      text: 快速开始
+      link: /guide/quick-start
 ---
 
 <HomeStatsCards />

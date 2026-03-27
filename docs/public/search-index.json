@@ -1,161 +1,25 @@
 {
-  "generatedAt": "2026-03-27T06:12:43+00:00",
+  "generatedAt": "2026-03-27T06:35:42+00:00",
   "notes": [
     {
-      "slug": "api",
-      "title": "为什么API计费要区分输入输出",
-      "created_at": "2026-03-27T06:11:17+00:00",
-      "updated_at": "2026-03-27T06:11:17+00:00",
-      "submitted_at": "2026-03-27T06:11:17+00:00",
+      "slug": "2",
+      "title": "代码示例2",
+      "created_at": "2026-03-27T03:21:33+00:00",
+      "updated_at": "2026-03-27T03:28:06+00:00",
+      "submitted_at": "2026-03-27T03:28:06+00:00",
       "date": "2026-03-27",
-      "word_count": 86,
+      "word_count": 122,
       "image_count": 0,
       "status": "mature",
       "tags": [
-        "API",
-        "计费",
-        "LLM",
-        "Token",
-        "优化"
-      ],
-      "link": "/notes/entries/api",
-      "excerpt": "大模型 API的输入和输出 token通常要分别计费 ## 输入阶段 - 将输入prompt做embedding - 进行一次前向传播 - 保存KV cache ## 输出阶段 - 自回归生成并保存新token - 每次都要访问缓存、前向传播 - 访存带宽大，时间消耗长，计算次数多 - 会更贵一些"
-    },
-    {
-      "slug": "note-3",
-      "title": "随笔",
-      "created_at": "2026-03-27T04:58:33+00:00",
-      "updated_at": "2026-03-27T04:58:33+00:00",
-      "submitted_at": "2026-03-27T04:58:33+00:00",
-      "date": "2026-03-27",
-      "word_count": 7,
-      "image_count": 0,
-      "status": "mature",
-      "tags": [
-        "个人"
-      ],
-      "link": "/notes/entries/note-3",
-      "excerpt": "一些随机的想法"
-    },
-    {
-      "slug": "note-4",
-      "title": "更新后的标题",
-      "created_at": "2026-03-27T04:58:33+00:00",
-      "updated_at": "2026-03-27T04:58:33+00:00",
-      "submitted_at": "2026-03-27T04:58:33+00:00",
-      "date": "2026-03-27",
-      "word_count": 6,
-      "image_count": 0,
-      "status": "mature",
-      "tags": [],
-      "link": "/notes/entries/note-4",
-      "excerpt": "更新后的内容"
-    },
-    {
-      "slug": "note-5",
-      "title": "待发布的内容",
-      "created_at": "2026-03-27T04:58:33+00:00",
-      "updated_at": "2026-03-27T04:58:33+00:00",
-      "submitted_at": "2026-03-27T04:58:33+00:00",
-      "date": "2026-03-27",
-      "word_count": 5,
-      "image_count": 0,
-      "status": "mature",
-      "tags": [],
-      "link": "/notes/entries/note-5",
-      "excerpt": "还在编辑中..."
-    },
-    {
-      "slug": "ai",
-      "title": "我对 AI 的想法",
-      "created_at": "2026-03-27T04:58:32+00:00",
-      "updated_at": "2026-03-27T04:58:32+00:00",
-      "submitted_at": "2026-03-27T04:58:32+00:00",
-      "date": "2026-03-27",
-      "word_count": 15,
-      "image_count": 0,
-      "status": "mature",
-      "tags": [
-        "思考",
-        "AI",
-        "个人笔记"
-      ],
-      "link": "/notes/entries/ai",
-      "excerpt": "今天思考了一些关于 AI 伦理的问题..."
-    },
-    {
-      "slug": "python",
-      "title": "Python 学习笔记",
-      "created_at": "2026-03-27T04:58:32+00:00",
-      "updated_at": "2026-03-27T04:58:32+00:00",
-      "submitted_at": "2026-03-27T04:58:32+00:00",
-      "date": "2026-03-27",
-      "word_count": 11,
-      "image_count": 0,
-      "status": "mature",
-      "tags": [
+        "code",
+        "code-example",
         "python",
-        "学习"
+        "audio",
+        "madmom"
       ],
-      "link": "/notes/entries/python",
-      "excerpt": "今天学习了装饰器的概念"
-    },
-    {
-      "slug": "post-training-rl-2",
-      "title": "Post-Training 详解：RL 方法论",
-      "created_at": "2026-03-27T04:58:07+00:00",
-      "updated_at": "2026-03-27T04:58:07+00:00",
-      "submitted_at": "2026-03-27T04:58:07+00:00",
-      "date": "2026-03-27",
-      "word_count": 38,
-      "image_count": 0,
-      "status": "mature",
-      "tags": [
-        "AI",
-        "Post-Training",
-        "RL"
-      ],
-      "link": "/notes/entries/post-training-rl-2",
-      "excerpt": "Post-Training 是现代 LLM 的关键步骤。常见方法包括 PPO、GRPO 等在线强化学习方法，和 DPO 等离线强化学习方法。"
-    },
-    {
-      "slug": "post-training-rl",
-      "title": "Post-Training 详解：RL 方法论",
-      "created_at": "2026-03-27T04:17:05+00:00",
-      "updated_at": "2026-03-27T04:17:05+00:00",
-      "submitted_at": "2026-03-27T04:17:05+00:00",
-      "date": "2026-03-27",
-      "word_count": 372,
-      "image_count": 0,
-      "status": "mature",
-      "tags": [
-        "AI",
-        "Post-Training",
-        "RL",
-        "PPO",
-        "GRPO",
-        "DPO",
-        "ML"
-      ],
-      "link": "/notes/entries/post-training-rl",
-      "excerpt": "# Post-Training 详解 ## 数据量需求 - 需要几十M到几B的数据 - 用于模型的微调和优化 ## 常用方法 ### Online RL（在线强化学习） 智能体在训练过程中持续与环境进行交互，数据的采集和训练是交替循环进行的。 #### PPO (Proximal Policy Optimization) - RM 给出绝对分数的估计值 - 梯度/优势为：**实际得分 - Crit"
-    },
-    {
-      "slug": "openknowforge-2",
-      "title": "OpenKnowForge 测试笔记",
-      "created_at": "2026-03-27T04:11:10+00:00",
-      "updated_at": "2026-03-27T04:11:10+00:00",
-      "submitted_at": "2026-03-27T04:11:10+00:00",
-      "date": "2026-03-27",
-      "word_count": 15,
-      "image_count": 0,
-      "status": "mature",
-      "tags": [
-        "test",
-        "demo"
-      ],
-      "link": "/notes/entries/openknowforge-2",
-      "excerpt": "这是一篇测试笔记，用于演示 API 功能。"
+      "link": "/notes/entries/2",
+      "excerpt": "## 场景 使用madmom库提取音频节奏点。 ## 代码 ```python from madmom.features.beats import RNNBeatProcessor, CRFBeatDetectionProcessor from madmom.features.downbeats import RNNBarProcessor def get_beats(input_audio, t"
     },
     {
       "slug": "self-attention",
@@ -174,29 +38,6 @@
       ],
       "link": "/notes/entries/self-attention",
       "excerpt": "Self-Attention可以类似一种更高级的卷积操作 对于一个图像，我们可以用一个nxn的卷积核，得到一个和原图像尺寸一样的新图片，这里新图片的每一个像素都经过了一次更新，都有着过去同位置像素和其邻居像素的信息。 Self-Attention的输入是一个[L,D]的序列，输出也是一个[L,D]的序列，新序列中每个元素也都得到了更新，但是相较于卷积，Self-Attention每个元素更新，都用"
-    },
-    {
-      "slug": "openknowforge",
-      "title": "OpenKnowForge快速开始",
-      "created_at": "2026-03-26T00:00:00+00:00",
-      "updated_at": "2026-03-26T17:08:56+00:00",
-      "submitted_at": "2026-03-26T17:08:56+00:00",
-      "date": "2026-03-26",
-      "word_count": 353,
-      "image_count": 0,
-      "status": "mature",
-      "tags": [
-        "guide",
-        "how-to",
-        "openknowforge",
-        "local-dev",
-        "github-pages",
-        "deploy",
-        "vitepress",
-        "ci"
-      ],
-      "link": "/notes/entries/openknowforge",
-      "excerpt": "## 本地开发与预览 ### 启动 API ```bash python -m uvicorn api.main:app --reload ``` ### 本地预览 ```bash npm run docs:dev ``` 访问： - `http://127.0.0.1:5173/notes/` - `http://127.0.0.1:5173/notes/explorer` ## GitHub "
     },
     {
       "slug": "git-submodule-quick-notes",
