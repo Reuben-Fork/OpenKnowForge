@@ -9,8 +9,8 @@ hero:
       text: Browse Notes
       link: /en/notes/
     - theme: alt
-      text: API Guide
-      link: /en/guide/api
+      text: Quick Start
+      link: /en/guide/quick-start
 ---
 
 <HomeStatsCards />

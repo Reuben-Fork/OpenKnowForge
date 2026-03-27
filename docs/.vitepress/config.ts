@@ -47,13 +47,14 @@ const zhThemeConfig: DefaultTheme.Config = {
     { text: '首页', link: '/' },
     { text: '笔记', link: '/notes/' },
     { text: '探索', link: '/notes/explorer' },
-    { text: '指南', link: '/guide/api' }
+    { text: '指南', link: '/guide/quick-start' }
   ],
   sidebar: {
     '/guide/': [
       {
         text: '指南',
         items: [
+          { text: '快速开始', link: '/guide/quick-start' },
           { text: 'API', link: '/guide/api' },
           { text: '结构', link: '/guide/structure' }
         ]
@@ -76,13 +77,14 @@ const enThemeConfig: DefaultTheme.Config = {
     { text: 'Home', link: '/en/' },
     { text: 'Notes', link: '/en/notes/' },
     { text: 'Explore', link: '/en/notes/explorer' },
-    { text: 'Guide', link: '/en/guide/api' }
+    { text: 'Guide', link: '/en/guide/quick-start' }
   ],
   sidebar: {
     '/en/guide/': [
       {
         text: 'Guide',
         items: [
+          { text: 'Quick Start', link: '/en/guide/quick-start' },
           { text: 'API', link: '/en/guide/api' },
           { text: 'Structure', link: '/en/guide/structure' }
         ]

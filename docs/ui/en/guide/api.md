@@ -134,7 +134,7 @@ Key fields in response:
 Read one note:
 
 ```bash
-curl http://127.0.0.1:8000/note/openknowforge
+curl http://127.0.0.1:8000/note/<slug>
 ```
 
 List all notes ordered by last edited time:

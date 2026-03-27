@@ -134,7 +134,7 @@ curl -X DELETE http://127.0.0.1:8000/note/<slug>
 读取单条：
 
 ```bash
-curl http://127.0.0.1:8000/note/openknowforge
+curl http://127.0.0.1:8000/note/<slug>
 ```
 
 按最后编辑时间倒序列出全部：
